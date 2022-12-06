@@ -1,0 +1,14 @@
+Designator,Footprint,Quantity,Value,LCSC Part #
+C0,CP_Radial_D10.0mm_P3.80mm,1,470uF,"
+
+C160628"
+"C1, C2, C3, C4, C5, C6",CP_Radial_D10.0mm_P3.80mm,6,333uF,"
+C233101"
+"H1, H2, H3, H4",MountingHole_3.2mm_M3,4,MountingHole,
+J0,Banana_Jack_2Pin,1,Battery Input,
+J1,AMASS_XT60-M_1x02_P7.20mm_Vertical,1,O1,C98733
+J2,AMASS_XT60-M_1x02_P7.20mm_Vertical,1,O2,C98733
+J3,AMASS_XT60-M_1x02_P7.20mm_Vertical,1,O3,C98733 
+J4,AMASS_XT60-M_1x02_P7.20mm_Vertical,1,O4,C98733
+J5,AMASS_XT60-M_1x02_P7.20mm_Vertical,1,O5,C98733
+J6,AMASS_XT60-M_1x02_P7.20mm_Vertical,1,O6,C98733
