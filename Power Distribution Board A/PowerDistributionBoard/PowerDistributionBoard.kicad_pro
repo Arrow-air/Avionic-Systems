@@ -380,8 +380,8 @@
       "idf": "",
       "netlist": "",
       "specctra_dsn": "",
-      "step": "",
-      "vrml": ""
+      "step": "PowerDistribution.step",
+      "vrml": "PowerDistributionBoard.wrl"
     },
     "page_layout_descr_file": ""
   },
