@@ -1,0 +1,96 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Master_LV_Board
+
+
+BO_ 2147494666 CAN_PACKET_BMS_TEMPS: 8 Vector__XXX
+ SG_ NoOfCells : 15|8@0+ (1,0) [0|1] "" Vector__XXX
+ SG_ auxVoltagesIndividual3 : 55|16@0+ (0.01,0) [0|0] "" Vector__XXX
+ SG_ auxVoltagesIndividual1 : 23|16@0+ (0.01,0) [0|0] "" Vector__XXX
+ SG_ auxVoltagesIndividual2 : 39|16@0+ (0.01,0) [0|0] "" Vector__XXX
+
+BO_ 2147493386 CAN_PACKET_BMS_V_TOT: 8 Master_LV_Board
+ SG_ packVoltage : 7|32@0- (1,0) [-3.4E+038|3.4E+038] "V"  Master_LV_Board
+ SG_ chargerVoltage : 39|32@0- (1,0) [0|1] "V"  Master_LV_Board
+
+BO_ 2147493642 CAN_PACKET_BMS_I: 8 Master_LV_Board
+ SG_ packCurrent1 : 7|32@0- (1,0) [0|1] "A"  Master_LV_Board
+ SG_ packCurrent2 : 39|32@0- (1,0) [0|1] "A"  Master_LV_Board
+
+BO_ 2147493898 CAN_PACKET_BMS_AH_WH: 8 Master_LV_Board
+ SG_ Ah_Counter : 7|32@0- (1,0) [0|1] "Ah"  Master_LV_Board
+ SG_ Wh_Counter : 39|32@0- (1,0) [0|1] "Wh"  Master_LV_Board
+
+BO_ 2147494154 CAN_PACKET_BMS_V_CELL: 8 Master_LV_Board
+ SG_ cellPoint : 7|8@0+ (1,0) [0|48] ""  Master_LV_Board
+ SG_ NoOfCells : 15|8@0+ (1,0) [0|48] ""  Master_LV_Board
+ SG_ cellVoltage10 : 23|16@0+ (0.001,0) [0|1] "V"  Master_LV_Board
+ SG_ cellVoltage11 : 39|16@0+ (0.001,0) [0|1] "V"  Master_LV_Board
+ SG_ cellVoltage12 : 55|16@0+ (0.001,0) [0|1] "V"  Master_LV_Board
+
+BO_ 2147494410 CAN_PACKET_BMS_BAL: 8 Master_LV_Board
+ SG_ NoOfCells : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ bal_state : 8|56@1- (1,0) [0|1] ""  Master_LV_Board
+
+BO_ 2147495178 CAN_PACKET_BMS_SOC_SOH_TEMP_STAT: 8 Master_LV_Board
+ SG_ cellVoltageLow : 7|16@0+ (0.001,0) [0|1] "V"  Master_LV_Board
+ SG_ cellVoltageHigh : 23|16@0+ (0.001,0) [0|1] "V"  Master_LV_Board
+ SG_ SOC : 39|8@0+ (0.392156862745098,0) [0|1] "%"  Master_LV_Board
+ SG_ SOH : 47|8@0+ (0.3922,0) [0|100] "%"  Master_LV_Board
+ SG_ tBattHi : 55|8@0+ (1,0) [0|1] "C"  Master_LV_Board
+ SG_ BitF : 63|8@0+ (1,0) [0|1] ""  Master_LV_Board
+
+BO_ 2147494922 CAN_PACKET_BMS_HUM: 6 Master_LV_Board
+ SG_ CAN_PACKET_BMS_TEMP0 : 7|16@0+ (0.01,0) [0|1] "C" Vector__XXX
+ SG_ CAN_PACKET_BMS_HUM_HUM : 23|16@0+ (0.01,0) [0|1] "%" Vector__XXX
+ SG_ CAN_PACKET_BMS_HUM_TEMP1 : 39|16@0+ (0.01,0) [0|1] "C" Vector__XXX
+
+
+
+CM_ BU_ Master_LV_Board "Default node if none specified";
+CM_ BO_ 2147493642 "CAN_PACKET_BMS_I";
+CM_ BO_ 2147494922 "CAN_PACKET_BMS_HUM";
+CM_ SG_ 2147494922 CAN_PACKET_BMS_TEMP0 "temperatures[0]";
+CM_ SG_ 2147494922 CAN_PACKET_BMS_HUM_HUM "humidity";
+CM_ SG_ 2147494922 CAN_PACKET_BMS_HUM_TEMP1 "temperatures[1]";
+VAL_ 2147494154 cellPoint 0 "" ;
+VAL_ 2147494154 NoOfCells 0 "No Description" ;
+SIG_VALTYPE_ 2147493386 packVoltage : 1;
+SIG_VALTYPE_ 2147493642 packCurrent1 : 1;
+SIG_VALTYPE_ 2147493642 packCurrent2 : 1;
+SIG_VALTYPE_ 2147493898 Ah_Counter : 1;
+SIG_VALTYPE_ 2147493898 Wh_Counter : 1;
+
