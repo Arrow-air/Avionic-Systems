@@ -82,7 +82,7 @@ void setup()
     image(img, 10, 150, img.width/2.5, img.height/2.5); // display logo
     image(img2, 1250, 300, img.width/2.5, img.height/2.5); // display logo
     
-  myPort = new Serial(this,"COM11", 115200); // Instantiate Serial class Serial.list()[0]
+  myPort = new Serial(this,Serial.list()[0], 115200); // Instantiate Serial class Serial.list()[0]
 }
 
 void draw() 
@@ -106,14 +106,12 @@ void draw()
     dataArray = dataString.split(","); // convert massive string into individual strings
     
     float datain[] = new float[dataArray.length];
-    println(dataArray.length);
     
     if((dataArray.length == 14) & (Flag == true))
     {
       for (int i = 0; i < dataArray.length; i++)
       {
           datain[i] = float(dataArray[i]);
-          println(datain[i]);
       }
       plot.addPoint(t1,datain[3]);
       Voltage.setText(str(datain[3]));
@@ -185,7 +183,7 @@ public void Reset()
   
   myPort.stop();
   myPort.clear();
-  myPort = new Serial(this,"COM11", 115200);
+  myPort = new Serial(this,Serial.list()[0], 115200);
   
   background(50); // Reset background
  
