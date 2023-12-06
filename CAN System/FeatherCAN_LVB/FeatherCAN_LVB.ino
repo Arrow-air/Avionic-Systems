@@ -45,7 +45,7 @@
 */
 
 unsigned char CANbuf[2] = {0};
-unsigned long CANID = 0x02;
+unsigned long CANID = 0x07;
 unsigned char len = 0;
 long timer = 0;
 int ContactorTrigger = 0;
