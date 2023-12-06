@@ -44,9 +44,12 @@
    Seeed Studio CAN-Bus Breakout Board for XIAO and QT Py - D7
 */
 
-unsigned char CANbuf[1];
+unsigned char CANbuf[2] = {0};
 unsigned long CANID = 0x02;
 unsigned char len = 0;
+long timer = 0;
+int ContactorTrigger = 0;
+int prevContactorTrigger = 0;
 
 #define SPI_CS_PIN  17 
 
@@ -55,10 +58,9 @@ MCP_CAN CAN(SPI_CS_PIN);                                    // Set CS pin
 
 void setup()
 {
-   pinMode(6, INPUT_PULLUP); // PixHawk Imput pin
+   pinMode(6, INPUT); // PixHawk Imput pin
    
     Serial.begin(115200);
-    while(!Serial);
     
     // below code need for OBD-II GPS Dev Kit Atemga32U4 version
     // pinMode(A3, OUTPUT);
@@ -68,7 +70,7 @@ void setup()
     // pinMode(12, OUTPUT);
     // digitalWrite(12, HIGH);
     
-    while (CAN_OK != CAN.begin(CAN_1000KBPS))    // init can bus : baudrate = 500k
+    while (CAN_OK != CAN.begin(CAN_500KBPS))    // init can bus : baudrate = 500k
     {
         Serial.println("CAN BUS FAIL!");
         delay(100);
@@ -79,30 +81,49 @@ void setup()
 
 void loop()
 {
-  CANbuf[0] = digitalRead(6);
-  CAN.sendMsgBuf(CANID, 1, sizeof(CANbuf), CANbuf);
+  ContactorTrigger = digitalRead(6);
 
-    unsigned char len = 0;
-    unsigned char buf[12];
-    
-    if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
-    {
-      Serial.println("CAN BUS OK!");
-        CAN.readMsgBuf(&len, buf);    // read data,  len: data length, buf: data buf
+  if(ContactorTrigger == 1 && prevContactorTrigger == 0)
+  {
+    CANbuf[0] = ContactorTrigger;
+    CANbuf[1] = 0;
+    CAN.sendMsgBuf(CANID, 1, sizeof(CANbuf), CANbuf);
 
-        unsigned long canId = CAN.getCanId();
-        
-        Serial.println("-----------------------------");
-        Serial.print("Get data from ID: ");
-        Serial.println(canId, DEC);
+    delay(4000);
 
-        for(int i = 0; i<len; i++)    // print the data
-        {
-            Serial.print(buf[i], DEC);
-            Serial.print("\t");
-        }
-        Serial.println();
-    }
+    CANbuf[0] = ContactorTrigger;
+    CANbuf[1] = ContactorTrigger;
+
+    CAN.sendMsgBuf(CANID, 1, sizeof(CANbuf), CANbuf);
+  }
+  else
+  {
+    CANbuf[0] = ContactorTrigger;
+    CANbuf[1] = ContactorTrigger;
+    CAN.sendMsgBuf(CANID, 1, sizeof(CANbuf), CANbuf);
+  }
+  unsigned char len = 0;
+  unsigned char buf[12];
+  
+  if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
+  {
+    Serial.println("CAN BUS OK!");
+      CAN.readMsgBuf(&len, buf);    // read data,  len: data length, buf: data buf
+
+      unsigned long canId = CAN.getCanId();
+      
+      Serial.println("-----------------------------");
+      Serial.print("Get data from ID: ");
+      Serial.println(canId, DEC);
+
+      for(int i = 0; i<len; i++)    // print the data
+      {
+          Serial.print(buf[i], DEC);
+          Serial.print("\t");
+      }
+      Serial.println();
+  }
+  prevContactorTrigger = ContactorTrigger;
 }
 
 // END FILE

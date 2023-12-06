@@ -56,7 +56,7 @@
 
 unsigned char serialBuff[22] = {0};
 unsigned char CANBuff[22];
-unsigned char CANBuffin[1];
+unsigned char CANBuffin[2] = {0};
 
 unsigned long CANID = 0x0001040A0000007F;
 unsigned char len = 0;
@@ -72,11 +72,8 @@ void setup()
 
   pinMode(4, OUTPUT); //precharge pin
   pinMode(5, OUTPUT); //contactor pin
-  pinMode(2, INPUT_PULLUP); // PixHawk Imput pin
-
-  while(!Serial);
     
-  while (CAN_OK != CAN.begin(CAN_1000KBPS))    // init can bus : baudrate = 500k
+  while (CAN_OK != CAN.begin(CAN_500KBPS))    // init can bus : baudrate = 500k
   {
       Serial.println("CAN BUS FAIL!");
       delay(100);
@@ -86,31 +83,34 @@ void setup()
 
 void loop()
 {
-    if(Serial1.available())
-    {
-      Serial1.readBytes(serialBuff,22);
-      Serial1.flush();
-      ESC.HandleSerialData(serialBuff,sizeof(serialBuff));
-      CANDataWrite();
-      delay(100);
-      
-      if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
-      {
-          CAN.readMsgBuf(&len, CANBuffin);    // read data,  len: data length, buf: data buf
+  if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
+  {
+    CAN.readMsgBuf(&len, CANBuffin);    // read data,  len: data length, buf: data buf
 
-          unsigned long canId = CAN.getCanId();
+    unsigned long canId = CAN.getCanId();
 
-          digitalWrite(4, (int)CANBuffin[0]); // precharcge
-          digitalWrite(5, (int)CANBuffin[0]); // contactor
+    digitalWrite(4, (int)CANBuffin[0]); // precharcge
+    digitalWrite(5, (int)CANBuffin[1]); // contactor
 
-          //BMS.HandleCANData(CANBuff,sizeof(CANBuff),canId);
-      }
-      delay(100); 
-    }
-    else
-    {
-      Serial1.flush();
-    }
+    //Serial.print(" Precharge - Contactor");
+    //Serial.print((int)CANBuffin[0]);
+    //Serial.print(" \t ");
+    //Serial.println((int)CANBuffin[1]);
+
+    //BMS.HandleCANData(CANBuff,sizeof(CANBuff),canId);
+  }
+  if(Serial1.available())
+  {
+    Serial1.readBytes(serialBuff,22);
+    Serial1.flush();
+    ESC.HandleSerialData(serialBuff,sizeof(serialBuff));
+    CANDataWrite();
+    delay(100); 
+  }
+  else
+  {
+    Serial1.flush();
+  }
 }
 
 int CANDataWrite()
@@ -125,8 +125,8 @@ int CANDataWrite()
   memset(ESC.CANbuf, CANID, sizeof(ESC.CANbuf));
   CAN.sendMsgBuf(CANID, 1, sizeof(ESC.CANbuf), ESC.CANbuf);
 }
-
+/*
 int CANDataRead()
 {
  
-}
+}*/

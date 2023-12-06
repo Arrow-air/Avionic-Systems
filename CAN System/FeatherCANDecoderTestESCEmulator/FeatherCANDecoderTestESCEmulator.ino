@@ -88,7 +88,7 @@ void loop() {
     {
       mySerial.write(Buffer[i]);  // read it and send it out Serial1 (pins 0 & 1)
       Serial.println(Buffer[i]);
-      digitalWrite(9, 0);
+      digitalWrite(9, 1);
       delay(1);
     }  
   }
