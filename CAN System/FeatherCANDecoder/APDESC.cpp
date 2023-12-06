@@ -163,19 +163,19 @@ APDESC::CheckFlectcher16(unsigned char * buffer)
 
 APDESC::PrintDataTable(data_t printdata)
 {
-  Serial.print("currentstatus : \t");
+  Serial.print("currentstatus : \t,");
   Serial.print(printdata.currentStatus);
-  Serial.print("\t currentVoltage : \t");
+  Serial.print(",\t currentVoltage : \t,");
   Serial.print(printdata.currentVoltage);
-  Serial.print("\t currentAmpsInput : \t");
+  Serial.print(",\t currentAmpsInput : \t,");
   Serial.print(printdata.currentAmpsInput);
-  Serial.print("\t currentMotorDuty : \t");
+  Serial.print(",\t currentMotorDuty : \t,");
   Serial.print(printdata.currentMotorDuty);
-  Serial.print("\t currentRPM : \t");
+  Serial.print(",\t currentRPM : \t,");
   Serial.print(printdata.currentRPM);
-  Serial.print("\t currentThrottle : \t");
+  Serial.print(",\t currentThrottle : \t,");
   Serial.print(printdata.currentThrottle);
-  Serial.print("\t currentTemp : \t");
+  Serial.print(",\t currentTemp : \t,");
   Serial.println(printdata.currentTemp);
 }
 

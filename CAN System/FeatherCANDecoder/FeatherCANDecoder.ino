@@ -92,7 +92,7 @@ void loop()
       Serial1.flush();
       ESC.HandleSerialData(serialBuff,sizeof(serialBuff));
       CANDataWrite();
-      delay(100); 
+      delay(100);
       
       if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
       {

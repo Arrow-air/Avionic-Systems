@@ -18,14 +18,8 @@ PImage img, img2;
 
 // Motion Tab Variables
 int t1 = 0,t2 = 0,t3 = 0,t4 = 0;
-float val =  0, val1 = 0,val2 = 0,val3 = 0,val4 = 0;
-
-// IO Variables
-int input;
-int inputState = 0;
 
 // Serial Read Variables
-char[] cmd = new char[2];
 String dataArray[];
 String dataString = "";
 
@@ -88,7 +82,7 @@ void setup()
     image(img, 10, 150, img.width/2.5, img.height/2.5); // display logo
     image(img2, 1250, 300, img.width/2.5, img.height/2.5); // display logo
     
-  myPort = new Serial(this,Serial.list()[0], 115200); // Instantiate Serial class
+  myPort = new Serial(this,"COM11", 115200); // Instantiate Serial class Serial.list()[0]
 }
 
 void draw() 
@@ -111,32 +105,29 @@ void draw()
     
     dataArray = dataString.split(","); // convert massive string into individual strings
     
-    if (dataArray[0].charAt(0) == '1' || dataArray[0].charAt(0) == '3') // If MOTOR CARD, Read Encoder Inputs
+    float datain[] = new float[dataArray.length];
+    println(dataArray.length);
+    
+    if((dataArray.length == 14) & (Flag == true))
     {
-      if(dataArray.length == 7 && Flag == true ) // filter serial outputs by their fixed length
+      for (int i = 0; i < dataArray.length; i++)
       {
-        if(dataArray[3].charAt(0) == '0') // filter serial outputs by their fixed length
-        {
-          encoderPlot(plot,Voltage,dataString,dataArray,t1,val1);
-          t1++;
-        }
-        if(dataArray[3].charAt(0) == '1') // filter serial outputs by their fixed length
-        {
-          encoderPlot(plot1,Current,dataString,dataArray,t2,val2);
-          t2++;
-        }
-        if(dataArray[3].charAt(0) == '2') // filter serial outputs by their fixed length
-        {
-          encoderPlot(plot2,RPM,dataString,dataArray,t3,val3);
-          t3++;
-        }
-        if(dataArray[3].charAt(0) == '4') // filter serial outputs by their fixed length
-        {
-          encoderPlot(plot3,Throttle,dataString,dataArray,t4,val4);
-          t4++;
-        }
+          datain[i] = float(dataArray[i]);
+          println(datain[i]);
       }
-    }
+      plot.addPoint(t1,datain[3]);
+      Voltage.setText(str(datain[3]));
+      t1++;
+      plot1.addPoint(t2,datain[5]);
+      Current.setText(str(datain[5]));
+      t2++;
+      plot2.addPoint(t3,datain[9]);
+      RPM.setText(str(datain[9]));
+      t3++;
+      plot3.addPoint(t4,datain[11]);
+      Throttle.setText(str(datain[11]));
+      t4++;
+     }
   }
 }
 
@@ -150,23 +141,6 @@ public void controlEvent(ControlEvent theEvent) // Event Handler for UI Inputs
 public void Start() 
 {
    Flag = true;
-}
-
-public void encoderPlot(GPlot plotn,Textlabel label,String dataString,String[] dataArray,int t,float val) // Setup Axes
-{
-  for(int j = 0 ; j < dataArray[1].length(); j++ )// Read the command characters
-  {
-    cmd[j] = dataArray[1].charAt(j);
-  }
-  if((cmd[0] == 'E') && (cmd[1] == 'P'))
-  {
-    if (!Float.isNaN(float(dataArray[4])))
-    {
-      label.setText(dataString);
-      val = float(dataArray[4]);
-      plotn.addPoint(t,val);
-    }
-  }
 }
 
 public void setupPlot(GPlot plotn,float posx,float posy,float dimx,float dimy, String Title) // Setup Axes
@@ -209,18 +183,16 @@ public void Reset()
   
   t1 = 0;t2 = 1;t3 = 0;t4 = 0;
   
-  val1 = 0;val2 = 0;val3 = 0;val4 = 0;
-  
   myPort.stop();
   myPort.clear();
-  myPort = new Serial(this,Serial.list()[0], 115200);
+  myPort = new Serial(this,"COM11", 115200);
   
-  background(190);
+  background(50); // Reset background
  
-  setupPlot(plot ,550, height/12               ,width*1.5/3,height*0.5/3,"X - Axis"); // call encoder plot setup function
-  setupPlot(plot1,550, height/12 + height*0.9/3,width*1.5/3,height*0.5/3,"Y - Axis"); // call encoder plot setup function
-  setupPlot(plot2,550, height/12 + height*1.8/3,width*1.5/3,height*0.5/3,"Z - Axis"); // call encoder plot setup function 
-  setupPlot(plot3,550, height/12 + height*1.8/3,width*1.5/3,height*0.5/3,"Z - Axis"); // call encoder plot setup function 
+  setupPlot(plot ,200,0 ,200,100,"Voltage"); // call encoder plot setup function
+  setupPlot(plot1,200,270,200,100,"Current"); // call encoder plot setup function
+  setupPlot(plot2,200,540,200,100,"RPM"); // call encoder plot setup function
+  setupPlot(plot3,200,810,200,100,"Throttle"); // call encoder plot setup function
 }
 public void Close() // close program, disble motors, stop encoder read
 {
