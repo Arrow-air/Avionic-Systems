@@ -89,14 +89,16 @@ void loop()
 
     unsigned long canId = CAN.getCanId();
 
-    digitalWrite(4, (int)CANBuffin[0]); // precharcge
-    digitalWrite(5, (int)CANBuffin[1]); // contactor
+    if(canId == 0x07)
+    {
+      digitalWrite(4, (int)CANBuffin[0]); // precharcge
+      digitalWrite(5, (int)CANBuffin[1]); // contactor
 
-    //Serial.print(" Precharge - Contactor");
-    //Serial.print((int)CANBuffin[0]);
-    //Serial.print(" \t ");
-    //Serial.println((int)CANBuffin[1]);
-
+      //Serial.print(" Precharge - Contactor");
+      //Serial.print((int)CANBuffin[0]);
+      //Serial.print(" \t ");
+      //Serial.println((int)CANBuffin[1]);
+    }
     //BMS.HandleCANData(CANBuff,sizeof(CANBuff),canId);
   }
   if(Serial1.available())
