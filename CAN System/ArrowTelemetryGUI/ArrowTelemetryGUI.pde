@@ -22,6 +22,7 @@ int t1 = 0,t2 = 0,t3 = 0,t4 = 0;
 // Serial Read Variables
 String dataArray[];
 String dataString = "";
+float datain[];
 
 // Control Flag
 boolean Flag = false;
@@ -39,9 +40,8 @@ void setup()
     surface.setResizable(false);
   }
   
-  img = loadImage("singer-instruments.png"); // Singer's logo
   PFont font = createFont("helvetica",height/35);          // Display fonts
-   
+  
   plot = new GPlot(this);
   plot1 = new GPlot(this);
   plot2 = new GPlot(this);
@@ -52,10 +52,10 @@ void setup()
   
   cp5.addButton("Start").setPosition(10,18).setSize(width/12,height/18)
        .setFont(font).setOff().setColorBackground((color(255,0,255)));
-    
+   
   cp5.addButton("Reset").setPosition(1250,18).setSize(width/12,height/18)
      .setFont(font).setOff().setColorBackground((color(255,0,255)));
-     
+  
   cp5.addButton("Close").setPosition(1480,18).setSize(width/12,height/18) // Create Shutdown Button.
      .setFont(font).setOff().setColorBackground((color(255,0,255)));
      
@@ -64,24 +64,23 @@ void setup()
      .setSize(width/4,height/16).setColor(color(255,0,0)).setText("0.0");            // Create output Lable to display serial data on screen
      
   setupPlot(plot1,200,270,200,100,"Current"); // call encoder plot setup function
-   Current = cp5.addTextlabel("Current").setFont(font).setPosition(1000,280)
+  Current = cp5.addTextlabel("Current").setFont(font).setPosition(1000,280)
      .setSize(width/4,height/16).setColor(color(255,0,0)).setText("0.0");            // Create output Lable to display serial data on screen
      
   setupPlot(plot2,200,540,200,100,"RPM"); // call encoder plot setup function
   RPM = cp5.addTextlabel("RPM").setFont(font).setPosition(1000,550)
      .setSize(width/4,height/16).setColor(color(255,0,0)).setText("0.0");            // Create output Lable to display serial data on screen
-  
+     
   setupPlot(plot3,200,810,200,100,"Throttle"); // call encoder plot setup function
   Throttle = cp5.addTextlabel("Throttle").setFont(font).setPosition(1000,820)
      .setSize(width/4,height/16).setColor(color(255,0,0)).setText("0.0");            // Create output Lable to display serial data on screen
-   
+     
+  img = loadImage("vtol_moving_2.gif"); 
+  img2 = loadImage("PT2C.png");
   
-   img = loadImage("vtol_moving_2.gif"); 
-   img2 = loadImage("PT2C.png");
-   
-    image(img, 10, 150, img.width/2.5, img.height/2.5); // display logo
-    image(img2, 1250, 300, img.width/2.5, img.height/2.5); // display logo
-    
+  image(img, 10, 150, img.width/2.5, img.height/2.5); // display logo
+  image(img2, 1250, 300, img.width/2.5, img.height/2.5); // display logo
+  
   myPort = new Serial(this,Serial.list()[0], 115200); // Instantiate Serial class Serial.list()[0]
 }
 
@@ -105,7 +104,7 @@ void draw()
     
     dataArray = dataString.split(","); // convert massive string into individual strings
     
-    float datain[] = new float[dataArray.length];
+    datain = new float[dataArray.length];
     
     if((dataArray.length == 14) & (Flag == true))
     {
