@@ -72,6 +72,10 @@ void setup()
 
   pinMode(4, OUTPUT); //precharge pin
   pinMode(5, OUTPUT); //contactor pin
+
+  digitalWrite(4, HIGH);
+  delay(3000);
+  digitalWrite(5, HIGH);
     
   while (CAN_OK != CAN.begin(CAN_500KBPS))    // init can bus : baudrate = 500k
   {
@@ -83,6 +87,7 @@ void setup()
 
 void loop()
 {
+  /*
   if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
   {
     CAN.readMsgBuf(&len, CANBuffin);    // read data,  len: data length, buf: data buf
@@ -112,7 +117,7 @@ void loop()
   else
   {
     Serial1.flush();
-  }
+  }*/
 }
 
 int CANDataWrite()
