@@ -48,7 +48,7 @@ unsigned char CANbuf[2] = {0};
 unsigned long CANID = 0x07;
 unsigned char len = 0;
 long timer = 0;
-int ContactorTrigger = 0;
+int ContactorTrigger = 1;
 int prevContactorTrigger = 0;
 
 #define SPI_CS_PIN  17 
@@ -81,7 +81,7 @@ void setup()
 
 void loop()
 {
-  ContactorTrigger = digitalRead(6);
+  //ContactorTrigger = digitalRead(6);
 
   if(ContactorTrigger == 1 && prevContactorTrigger == 0)
   {
