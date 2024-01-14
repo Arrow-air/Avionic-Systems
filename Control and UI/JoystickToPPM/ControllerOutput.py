@@ -15,8 +15,8 @@ controls[1].init()                             # initialise the controls
 #arduino =  serial.Serial('/dev/ttyUSB0', 9600,timeout = 1) # connect to the arduino's serial port
 #time.sleep(2)
 
-#arduino =  serial.Serial('COM9', 9600,timeout = 1)  # connect to the arduino's serial port
-#time.sleep(2)
+arduino =  serial.Serial('COM4', 9600,timeout = 1)  # connect to the arduino's serial port
+time.sleep(2)
 
 EXIT = False
 
@@ -95,7 +95,7 @@ while not EXIT:
     cstring = ",".join(control)                 # convert list to a single string with commas seperating values
                 
     print(cstring)
-    #arduino.write(cstring)                      # print string to shell and write data to arduino with a 0.1ms delay
+    arduino.write(bytes(cstring, 'ascii'))                      # print string to shell and write data to arduino with a 0.1ms delay
     time.sleep(0.0001)
     
     if  controls[1].get_button(1) == 1:
