@@ -2,7 +2,7 @@ import serial
 import time
 
 
-class LoRaComms:
+class LoRa:
     
     def __init__(self,LoRaport,LoRabitrate):
         self.LoRaport = LoRaport
@@ -15,11 +15,14 @@ class LoRaComms:
 
     def LoRaTransmit(self):
         self.LoRaSerial.write(self.packet)
-        print("Transmit")
     
     def LoRaReceive(self):
-        self.Data = self.LoRaSerial.read_until('\n',None)
-        print("Receive")
+        while self.Dataleft > 0:
+            self.Data = self.LoRaSerial.read()
+            time.sleep(0.01)
+            self.Dataleft = self.LoRaSerial.in_waiting()
+            self.Data += self.LoRaSerial.read(self.Dataleft)
+        return self.Data
 
     ''' 
         'ATE\r\n'                                               #Enable/disable AT command echo
@@ -55,5 +58,3 @@ class LoRaComms:
         self.packet = bytes(self.ATExit, 'ascii')
         print(self.packet)
         self.LoRaTransmit()
-
-        print("Config")
