@@ -15,6 +15,7 @@ class LoRa:
 
     def LoRaTransmit(self):
         self.LoRaSerial.write(self.packet)
+        time.sleep(0.6)
     
     def LoRaReceive(self):
         while self.Dataleft > 0:

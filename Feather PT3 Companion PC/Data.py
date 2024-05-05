@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 import sys
 import os
 
@@ -20,6 +21,14 @@ class Data:
 
         self.Lora.LoRaconfig()
 
+        try:
+            os.mkdir('./Logs')
+        except OSError as error:
+            print(error)
+
+        self.Starttimestamp = str(datetime.now().year)+ '_' + str(datetime.now().month)+ '_' + str(datetime.now().day) + '-' + str(datetime.now().hour) + '_' + str(datetime.now().minute)
+        self.logFile = open('./Logs/FeatherFlightLog-'+self.Starttimestamp+'.csv','w',encoding='utf-8')
+
     def packetStruct(self):
         return 0
 
@@ -30,12 +39,12 @@ class Data:
     
     def logUpdate(self):
         self.logPacket = self.JoystickPacket + self.VerontePacket + self.BMSPacket + self.ESCPacket + self.ParachutePacket
-
+        self.logFile.write(str(self.logPacket)+ '-' + str(datetime.now()) + '\n')
         return 0
 
     def telemetryUpdate(self):
         self.telemetryPacket = self.JoystickPacket + self.VerontePacket + self.BMSPacket + self.ESCPacket + self.ParachutePacket
 
-        self.Lora.packet = bytes(str(self.telemetryPacket)+'\n', 'ascii')
+        self.Lora.packet = bytes(str(self.telemetryPacket)+ '-' + str(datetime.now()) +'\n', 'ascii')
         self.Lora.LoRaTransmit()
         return 0

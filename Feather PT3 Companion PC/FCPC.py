@@ -1,5 +1,14 @@
 #!/usr/bin/env python
+'''
+Arrow Air 2024
 
+Project Feather Flight Companinon Computer
+
+Data Logger
+Telemetry Server
+User Interface Engine
+
+'''
 import os
 import sys
 import time
@@ -48,21 +57,21 @@ while not EXIT:
             EXIT = True
 
     data.JoystickPacket = JoystickUSB.packetStruct()
-    print(data.JoystickPacket)
+    #data.JoystickPacket = JoystickCAN.packetStruct()
+    #print(data.JoystickPacket)
 
     data.ESCPacket = esc.packetStruct()
-    print(data.VerontePacket)
+    #print(data.ESCPacket)
 
     data.BMSPacket  = bms.packetStruct()
-    print(data.VerontePacket)
+    #print(data.BMSPacket)
 
     data.VerontePacket  = veronte.packetStruct()
-    print(data.VerontePacket)
+    #print(data.VerontePacket)
 
     data.uiUpdate()
     data.logUpdate()
     data.telemetryUpdate()
-    time.sleep(0.4)
 
     if  str(data.JoystickPacket[4]) == "b'001'":
         pygame.quit()                           # This is used to quit pygame and use any internal program within the python

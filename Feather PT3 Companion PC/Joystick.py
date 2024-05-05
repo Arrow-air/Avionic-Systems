@@ -11,7 +11,7 @@ class Joystick:
         self.new_max = 355
         
         self.USBJoystick = pygame.joystick.get_init()
-        self.CANJoystick = 0
+        self.CANJoystick = JoystickCAN.isPresent(self)
 
         self.packet = [bytes('', 'ascii')]
 
@@ -25,10 +25,14 @@ class Joystick:
 
             print(self.controllerName)
         
-        '''
-        if self.CANJoystick == True:
         
-        '''
+        if self.CANJoystick == True:
+            self.CANcontrols = ''
+            self.controllerName = ''
+            self.controlleraxesNumber = ''
+            self.controllerhatNumber = ''
+            self.controllerbuttonNumber = ''
+        
 
     def valueMap(self,old_value):
         new_value = str(int(round(( ( old_value - self.old_min ) / (self.old_max - self.old_min) ) * (self.new_max - self.new_min) + self.new_min)))
@@ -111,4 +115,8 @@ class JoystickCAN(Joystick):
     
     def hatCAN(self):
          pass
+    
+    def isPresent(self):
+        self.Present = False
+        return self.Present
 
