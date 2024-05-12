@@ -1,8 +1,48 @@
-import time
-import sys
-import pygame
+from pygame import image, draw, font
+import os
 
 class UI:
 
-    def __init__(self) -> None:
+    def __init__(self,display,time,modeselect) -> None:
+        self.display = display
+        self.time = time
+        self.mode = {0:'GCS',1:'FUI'}
+        self.modeselect = modeselect
+
+        if self.modeselect == self.mode.get(0):
+            self.screen = self.display.set_mode((1860,1020),display=1)
+            print(self.modeselect)
+        elif self.modeselect == self.mode.get(1):
+            self.screen = self.display.set_mode((1280,800),display=1)
+            print(self.modeselect)
+
+        self.display.set_caption('UI Windows 2X Middle Split')
+        self.display.set_icon(image.load('arrow-lockup-blue.png'))
+        self.screen.fill("blue")
+
+        self.clock = self.time.Clock() 
+
+        print('Display No: ' + str(self.display.get_num_displays()))
+        print('Display Size: ' + str(self.display.get_window_size()))
+
+    def background(self):
+        self.screen.fill("blue")
+        draw.line(self.screen,(200,200,200,0.1),(self.screen.get_width()/2,50),(self.screen.get_width()/2,950),2)
+
+    def run(self,packet):
+        self.packet = packet
+        self.display.flip()
+        self.clock.tick(100)
+
+    def stateUpdate(self,packet):
+        self.packet = packet
+        self.text = font.Font(None,32).render(str(self.packet),True,(200,200,150))
+        self.screen.blit(self.text,(50,50))
+
+    def infoUpdate(self,packet):
+        self.packet = packet
+        self.text = font.Font(None,32).render(str(self.packet),True,(200,200,150))
+        self.screen.blit(self.text,(1000,50))
+    
+    def textDisplay(self):
         pass

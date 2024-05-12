@@ -1,28 +1,32 @@
-import can
-import pygame
 
 class Joystick:
     
-    def __init__(self) -> None:
+    def __init__(self,joystick,time) -> None:
         self.old_min = -1
         self.old_max = 1
         self.new_min = 100
         self.new_max = 355
         
-        self.USBJoystick = pygame.joystick.get_init()
+        self.joystick = joystick
+        self.time = time
+        self.clock = self.time.Clock()  
+        
+        self.USBJoystick = self.joystick.get_init()
         self.CANJoystick = JoystickCAN.isPresent(self)
 
         self.packet = [bytes('', 'ascii')]
 
         if self.USBJoystick == True:
-            self.USBcontrols = [pygame.joystick.Joystick(id) for id in range(pygame.joystick.get_count())]      # call the joystick controls
+            self.USBcontrols = [self.joystick.Joystick(id) for id in range(self.joystick.get_count())]      # call the joystick controls
             [i.init() for i in self.USBcontrols]                            # initialise the USB controls
             self.controllerName = [str(i.get_name()) for i in self.USBcontrols]
             self.controlleraxesNumber = [i.get_numaxes() for i in self.USBcontrols]
             self.controllerhatNumber = [i.get_numhats() for i in self.USBcontrols]
             self.controllerbuttonNumber = [i.get_numbuttons() for i in self.USBcontrols]
 
+            print('Joystick No: ' + str(len(self.controllerName)))
             print(self.controllerName)
+        
         
         
         if self.CANJoystick == True:
@@ -39,6 +43,9 @@ class Joystick:
 
 class JoystickUSB(Joystick):
 
+    def __init__(self, joystick, time) -> None:
+        super().__init__(joystick, time)
+
     def packetStruct(self):
         self.packet = self.dof4ControlUSB() + self.buttonsUSB() + self.hatUSB()
         return self.packet
@@ -51,6 +58,7 @@ class JoystickUSB(Joystick):
         #print(str(self.Yaw) + "," + str(self.Throttle) + "," + str(self.Roll) + "," + str(self.Pitch))
 
         self.dof4 = [self.Yaw,self.Throttle,self.Roll,self.Pitch]
+        #self.clock.tick(1000)
         return self.dof4
 
     def buttonsUSB(self):
@@ -100,8 +108,14 @@ class JoystickUSB(Joystick):
         
         self.hat = [bytes(self.hatA, 'ascii'),bytes(self.hatB, 'ascii')]
         return self.hat
+    
+    def run(self):
+        self.clock.tick(100)
 
 class JoystickCAN(Joystick):
+
+    def __init__(self, joystick, time) -> None:
+        super().__init__(joystick, time) 
 
     def packetStruct(self):
         return self.packet
@@ -118,4 +132,7 @@ class JoystickCAN(Joystick):
     def isPresent(self):
         self.Present = False
         return self.Present
+    
+    def run(self):
+        self.clock.tick(1000)
 

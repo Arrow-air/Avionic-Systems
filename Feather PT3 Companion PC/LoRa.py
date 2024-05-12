@@ -1,7 +1,6 @@
 import serial
 import time
 
-
 class LoRa:
     
     def __init__(self,LoRaport,LoRabitrate):
