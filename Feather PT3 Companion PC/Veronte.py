@@ -5,17 +5,23 @@ import serial
 
 class Veronte:
 
-    def __init__(self,Veronteport,Verontebitrate):
+    def __init__(self,Veronteport,Verontebitrate,modeselect):
+
+        self.modeselect = modeselect
+        self.mode = {0:'GCS',1:'FUI'}
+
         self.Veronteport = Veronteport
         self.Verontebitrate = Verontebitrate
         self.Data = ''
-        self.packet = [bytes('', 'ascii')]
+        self.dataDictionary = {'altitude_AGL':0,'altitude_AGL_set':0,'altitude_ABS':0,'altitude_AGL':0,'heading':0,'compass':0,'attitude_pitch':0,'attitude_roll':0,'vertical_speed_KTS':0,
+                               'airspeed_KTS':0,'OAT':0,'altitude_ABS':0}
+        self.packet = ['']
 
         self.VeronteSerial =  serial.Serial(self.Veronteport,self.Verontebitrate,timeout = 1) # connect to the LoRa Modules 's serial port
-        print("Init")
-     
-    def packetStruct(self):
+        print("Veronte Init")
 
+    def packetStruct(self):
+        self.packet = self.dataDictionary
         return self.packet
 
     def readData(self):

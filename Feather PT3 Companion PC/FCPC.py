@@ -12,19 +12,18 @@ User Interface Engine
 import time
 from datetime import datetime
 import pygame
-import serial
 import threading
-from multiprocessing import Process
-import concurrent.futures
+import socket
 
 import can
+import IO
 import UI
 import ESC
 import BMS
 import Veronte
 import Joystick
 import LoRa
-import UDP
+import TCP
 import Data
 
 ''' LINUX Systems
@@ -39,108 +38,128 @@ time.sleep(2)
 #arduino =  serial.Serial('COM4', 9600,timeout = 1)  # connect to the arduino's serial port
 #LoRaCPC =  serial.Serial('COM10', 115200,timeout = 1) # connect to the Lora Module's serial port
 '''
+
+#gound_or_flight = 'GCS' #GroundControlStation
+gound_or_flight = 'FUI' #Flight UI
+
+LoraComport = 'COM10'   #Lora Serial Port
+VeronteComport = 'COM9' #Veronte Serial Port
+Serialbitrate = 115200
+
+TCP_IP = socket.gethostname() #"127.0.0.1"
+print(TCP_IP)
+TCP_PORT = 1234
+TCP_Buffer = 50
+
 pygame.init()
 pydisplay = pygame.display
 pytime = pygame.time
 pyjoystick = pygame.joystick
 pyclock = pygame.time.Clock()
 
-esc = ESC.ESC()
-bms = BMS.BMS()
-udp = UDP.UDP()
+io = IO.IO(gound_or_flight)
+esc = ESC.ESC(gound_or_flight)
+bms = BMS.BMS(gound_or_flight)
+tcp = TCP.TCP(TCP_IP,TCP_PORT,TCP_Buffer,gound_or_flight)
 
-lora = LoRa.LoRa('COM10',115200)
-veronte = Veronte.Veronte('COM9',115200)
-ui = UI.UI(pydisplay,pytime,'GCS')
-data = Data.Data(lora,udp,ui)
+lora = LoRa.LoRa(LoraComport,Serialbitrate,gound_or_flight)
+veronte = Veronte.Veronte(VeronteComport,Serialbitrate,gound_or_flight)
+ui = UI.UI(pydisplay,pytime,gound_or_flight)
+data = Data.Data(lora,tcp,ui,gound_or_flight)
 
-#joystick = Joystick.Joystick(pyjoystick,pytime)
-joystickUSB = Joystick.JoystickUSB(pyjoystick,pytime)
-joystickCAN = Joystick.JoystickCAN(pyjoystick,pytime)
+joystickUSB = Joystick.JoystickUSB(pyjoystick,pytime,gound_or_flight)
+#joystickCAN = Joystick.JoystickCAN(pyjoystick,pytime,gound_or_flight)
 
-time.sleep(5)
+tlock = threading.Lock()
 
 def dataUpdate():
     data.JoystickPacket = joystickUSB.packetStruct()
     #data.JoystickPacket = joystickCAN.packetStruct()
-    print(data.JoystickPacket)
+    data.IOPacket = io.packetStruct()
     data.ESCPacket = esc.packetStruct()
     data.BMSPacket  = bms.packetStruct()
     data.VerontePacket  = veronte.packetStruct()
-    data.now = str(datetime.now())
-    pass
+    data.now['TimeStamp'] = str(datetime.now())
+    data.packetStruct()
 
 EXIT = False
 
 if __name__ == '__main__':
+    
     while not EXIT:
-        #data.JoystickPacket = joystickUSB.packetStruct()
-        #data.JoystickPacket = joystickCAN.packetStruct()
-        #print(data.JoystickPacket)
 
-        #dataUpdate()
+        if gound_or_flight == 'FUI':
 
-        dataThread = threading.Thread(target=dataUpdate)
-        uiThread = threading.Thread(target=data.uiUpdate)
-        logThread = threading.Thread(target=data.logUpdate)
-        telematryThread = threading.Thread(target=data.telemetryUpdate)
-        
-        dataThread.start()
-        uiThread.start()
-        logThread.start()
-        telematryThread.start()
+            dataThread = threading.Thread(target=dataUpdate)
+            uiThread = threading.Thread(target=data.uiUpdate)
+            logThread = threading.Thread(target=data.logUpdate)
+            telematryThread = threading.Thread(target=data.telemetryUpdate,daemon=True)
+            
+            dataThread.start()
+            uiThread.start()
+            logThread.start()
+            telematryThread.start()
 
-        dataThread.join()
-        uiThread.join()
-        logThread.join()
-        telematryThread.join()
-        data.uiUpdate()
+            dataThread.join()
+            uiThread.join() 
+            #logThread.join()
+            #telematryThread.join()
 
-        #dataProcess = Process(target=dataUpdate)
-        #uiProcess = Process(target=data.uiUpdate)
-        #logThreaProcess = Process(target=data.logUpdate)
-        #telematryProcess = Process(target=data.telemetryUpdate)
+        elif gound_or_flight == 'GCS':
 
-        #dataProcess.start()
-        #uiProcess.start()
-        #logThreaProcess.start()
-        #telematryProcess.start()
+            gcsThread = threading.Thread(target=data.gcsUpdate,daemon=True)
+            uiThread = threading.Thread(target=data.uiUpdate)
 
-        #dataProcess.join()
-        #uiProcess.join()
-        #logThreaProcess.join()
-        #telematryProcess.join()
+            gcsThread.start()
+            uiThread.start()
+            #dataProcess = Process(target=dataUpdate)
+            #uiProcess = Process(target=data.uiUpdate)
+            #logThreaProcess = Process(target=data.logUpdate)
+            #telematryProcess = Process(target=data.telemetryUpdate)
 
-        #with concurrent.futures.ThreadPoolExecutor() as executor:
-            #dataFuture = executor.submit(dataUpdate)
-            #data.JoystickPacket = bytes(JoystickFuture.result(),'ascii')
-            #data.JoystickPacket = JoystickCAN.packetStruct()
+            #dataProcess.start()
+            #uiProcess.start()
+            #logThreaProcess.start()
+            #telematryProcess.start()
 
-            #data.ESCPacket = esc.packetStruct()
-            #print(data.ESCPacket)
+            #dataProcess.join()
+            #uiProcess.join()
+            #logThreaProcess.join()
+            #telematryProcess.join()
 
-            #data.BMSPacket  = bms.packetStruct()
-            #print(data.BMSPacket)
+            #with concurrent.futures.ThreadPoolExecutor() as executor:
+                #dataFuture = executor.submit(dataUpdate)
+                #data.JoystickPacket = bytes(JoystickFuture.result(),'ascii')
+                #data.JoystickPacket = JoystickCAN.packetStruct()
 
-            #data.VerontePacket  = veronte.packetStruct()
-            #print(data.VerontePacket)
+                #data.ESCPacket = esc.packetStruct()
+                #print(data.ESCPacket)
 
-            #data.now = str(datetime.now())
-            #print(data.now)
+                #data.BMSPacket  = bms.packetStruct()
+                #print(data.BMSPacket)
 
-            #uiFuture = executor.submit(data.uiUpdate)
-            #logFuture = executor.submit(data.logUpdate)
-            #telematryFuture = executor.submit(data.telemetryUpdate)
+                #data.VerontePacket  = veronte.packetStruct()
+                #print(data.VerontePacket)
+
+                #data.now = str(datetime.now())
+                #print(data.now)
+
+                #uiFuture = executor.submit(data.uiUpdate)
+                #logFuture = executor.submit(data.logUpdate)
+                #telematryFuture = executor.submit(data.telemetryUpdate)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                lora.LoraTerminate()
+                tcp.TCPTerminate()
+                pygame.quit()
                 EXIT = True
 
-        if  str(data.JoystickPacket[4]) == "b'001'":
-            pygame.quit()                           # This is used to quit pygame and use any internal program within the python
+        if  str(data.JoystickPacket['switch_states']) == '001000' or str(data.JoystickPacket['switch_states']) == '001026' or str(data.JoystickPacket['switch_states']) == '000001':
+            lora.LoraTerminate()
+            tcp.TCPTerminate()
+            pygame.quit()
             quit()
-
-        #pyclock.tick(1000)
 
     pygame.quit()
     quit()

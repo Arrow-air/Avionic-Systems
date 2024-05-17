@@ -4,10 +4,14 @@ import os
 class UI:
 
     def __init__(self,display,time,modeselect) -> None:
+        
+        self.modeselect = modeselect
+        self.mode = {0:'GCS',1:'FUI'}
+        
         self.display = display
         self.time = time
         self.mode = {0:'GCS',1:'FUI'}
-        self.modeselect = modeselect
+        
 
         if self.modeselect == self.mode.get(0):
             self.screen = self.display.set_mode((1860,1020),display=1)
@@ -24,6 +28,14 @@ class UI:
 
         print('Display No: ' + str(self.display.get_num_displays()))
         print('Display Size: ' + str(self.display.get_window_size()))
+        print("UI Init")
+
+    def uiUpdate(self,packet):
+        self.packet = packet
+        self.background()
+        self.stateUpdate(self.packet)
+        self.infoUpdate(self.packet)
+        self.run(self.packet)
 
     def background(self):
         self.screen.fill("blue")
@@ -36,13 +48,13 @@ class UI:
 
     def stateUpdate(self,packet):
         self.packet = packet
-        self.text = font.Font(None,32).render(str(self.packet),True,(200,200,150))
-        self.screen.blit(self.text,(50,50))
+        self.text = font.Font(None,20).render(str(self.packet),True,(200,200,150))
+        self.screen.blit(self.text,(10,50))
 
     def infoUpdate(self,packet):
         self.packet = packet
-        self.text = font.Font(None,32).render(str(self.packet),True,(200,200,150))
-        self.screen.blit(self.text,(1000,50))
+        self.text = font.Font(None,20).render(str(self.packet),True,(200,200,150))
+        self.screen.blit(self.text,(960,50))
     
     def textDisplay(self):
         pass

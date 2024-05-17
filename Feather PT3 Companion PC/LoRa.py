@@ -1,20 +1,30 @@
 import serial
 import time
+import threading
 
 class LoRa:
     
-    def __init__(self,LoRaport,LoRabitrate):
+    def __init__(self,LoRaport,LoRabitrate,modeselect):
+
+        self.modeselect = modeselect
+        self.mode = {0:'GCS',1:'FUI'}
+
         self.LoRaport = LoRaport
         self.LoRabitrate = LoRabitrate
         self.Data = ''
         self.packet = bytes('', 'ascii')
 
         self.LoRaSerial =  serial.Serial(self.LoRaport,self.LoRabitrate,timeout = 1) # connect to the LoRa Modules 's serial port
-        print("Init")
+        self.LoRaSerial.set_buffer_size(rx_size=10000,tx_size=10000)
+
+        self.tlock = threading.Lock()
+
+        print("Lora Init")
 
     def LoRaTransmit(self):
-        self.LoRaSerial.write(self.packet)
-        time.sleep(0.6)
+        with self.tlock:
+            self.LoRaSerial.write(self.packet)
+        time.sleep(0.2)
     
     def LoRaReceive(self):
         while self.Dataleft > 0:
@@ -24,7 +34,7 @@ class LoRa:
             self.Data += self.LoRaSerial.read(self.Dataleft)
         return self.Data
 
-    ''' 
+    ''' Lora Configuration Commands
         'ATE\r\n'                                               #Enable/disable AT command echo
         'AT+VER\r\n'                                            #Check the software version number
         'AT+SF=7\r\n'                                           #Set the spreading factor to 7, the value range is 7~12
@@ -42,19 +52,42 @@ class LoRa:
         'AT+RESTORE=0\r\n'                                      #Restore factory settings, 0: disabled, 1: enabled
     ''' 
     def LoRaconfig(self):
-        self.ATStart = '+++\r\n'                                               #Enter AT command mode
-        self.ATExit = 'AT+EXIT\r\n'                                           #Exit AT command mode
-        self.ATE = 'ATE\r\n'                                               #Enable/disable AT command echo
-        self.ATRSSI ='AT+RSSI=1\r\n'                                         #Enable/disable RSSI signal value output, 0: disable, 1: enable
-        self.ATHelp = 'AT+HELP\r\n'                                           #View AT help
-        self.ATMode = 'AT+MODE=1\r\n'                                         #DTU working mode, 1: stream mode, 2: packet mode, 3: relay mode
-        self.ATPWR = 'AT+PWR=22\r\n'                                         #Set the RF power, the value range is 10~22dBm
-        self.ATBW = 'AT+BW=2\r\n'                                           #Set bandwidth, 0 means 125KHz, 1 means 250KHz, 2 means 500KHz
+        self.ATStart = "+++\r\n".encode()                                              #Enter AT command mode
+        self.ATExit = "AT+EXI\r\n".encode()                                           #Exit AT command mode
+        self.ATE = "ATE\r\n".encode()                                               #Enable/disable AT command echo
+        self.ATRSSI ="AT+RSSI=1\r\n".encode()                                         #Enable/disable RSSI signal value output, 0: disable, 1: enable
+        self.ATHelp = "AT+HELP\r\n".encode()                                           #View AT help
+        self.ATMode = "AT+MODE=1\r\n".encode()                                         #DTU working mode, 1: stream mode, 2: packet mode, 3: relay mode
+        self.ATPWR = "AT+PWR=22\r\n".encode()                                         #Set the RF power, the value range is 10~22dBm
+        self.ATBW = "AT+BW=2\r\n".encode()                                           #Set bandwidth, 0 means 125KHz, 1 means 250KHz, 2 means 500KHz
 
-        self.packet = bytes(self.ATStart + self.ATMode + self.ATE + self.ATPWR + self.ATBW + self.ATRSSI, 'ascii')
+        self.packet = self.ATStart
         print(self.packet)
         self.LoRaTransmit()
 
-        self.packet = bytes(self.ATExit, 'ascii')
+        self.packet = self.ATMode #+ self.ATE + self.ATPWR + self.ATBW + self.ATRSSI + self.ATExit
         print(self.packet)
         self.LoRaTransmit()
+
+        self.packet = self.ATE
+        print(self.packet)
+        self.LoRaTransmit()
+
+        self.packet =  self.ATPWR
+        print(self.packet)
+        self.LoRaTransmit()
+
+        self.packet = self.ATBW
+        print(self.packet)
+        self.LoRaTransmit()
+
+        self.packet = self.ATRSSI
+        print(self.packet)
+        self.LoRaTransmit()
+
+        self.packet = self.ATExit
+        print(self.packet)
+        self.LoRaTransmit()
+
+    def LoraTerminate(self):
+        self.LoRaSerial.close()

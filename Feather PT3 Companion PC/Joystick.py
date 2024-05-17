@@ -1,7 +1,13 @@
 
 class Joystick:
     
-    def __init__(self,joystick,time) -> None:
+    def __init__(self,joystick,time,modeselect) -> None:
+
+        self.modeselect = modeselect
+        self.mode = {0:'GCS',1:'FUI'}
+
+        self.dataDictionary = {'command_pitch':0,'command_roll':0,'command_yaw':0,'command_throttle':0,'switch_states':0}
+
         self.old_min = -1
         self.old_max = 1
         self.new_min = 100
@@ -14,7 +20,7 @@ class Joystick:
         self.USBJoystick = self.joystick.get_init()
         self.CANJoystick = JoystickCAN.isPresent(self)
 
-        self.packet = [bytes('', 'ascii')]
+        self.packet = []
 
         if self.USBJoystick == True:
             self.USBcontrols = [self.joystick.Joystick(id) for id in range(self.joystick.get_count())]      # call the joystick controls
@@ -35,7 +41,8 @@ class Joystick:
             self.controlleraxesNumber = ''
             self.controllerhatNumber = ''
             self.controllerbuttonNumber = ''
-        
+            
+        print("Joystick Init")
 
     def valueMap(self,old_value):
         new_value = str(int(round(( ( old_value - self.old_min ) / (self.old_max - self.old_min) ) * (self.new_max - self.new_min) + self.new_min)))
@@ -43,22 +50,27 @@ class Joystick:
 
 class JoystickUSB(Joystick):
 
-    def __init__(self, joystick, time) -> None:
-        super().__init__(joystick, time)
+    def __init__(self, joystick, time,modeselect) -> None:
+        super().__init__(joystick, time, modeselect)
 
     def packetStruct(self):
-        self.packet = self.dof4ControlUSB() + self.buttonsUSB() + self.hatUSB()
+        self.dataDictionary['command_pitch'] = self.dof4ControlUSB()[0]# + self.buttonsUSB() + self.hatUSB()
+        self.dataDictionary['command_roll'] = self.dof4ControlUSB()[1]# + self.buttonsUSB() + self.hatUSB()
+        self.dataDictionary['command_yaw'] = self.dof4ControlUSB()[2]# + self.buttonsUSB() + self.hatUSB()
+        self.dataDictionary['command_throttle'] = self.dof4ControlUSB()[3]# + self.buttonsUSB() + self.hatUSB()
+        self.dataDictionary['switch_states'] = (self.buttonsUSB()[0] + self.buttonsUSB()[1])
+
+        self.packet = self.dataDictionary
         return self.packet
     
     def dof4ControlUSB(self):
-        self.Yaw = bytes(self.valueMap(self.USBcontrols[0].get_axis(0)), 'ascii')
-        self.Throttle = bytes(self.valueMap(self.USBcontrols[0].get_axis(1)), 'ascii')
-        self.Roll = bytes(self.valueMap(self.USBcontrols[1].get_axis(0)), 'ascii')
-        self.Pitch = bytes(self.valueMap(self.USBcontrols[1].get_axis(1)), 'ascii') 
+        self.Yaw = self.valueMap(self.USBcontrols[0].get_axis(0))
+        self.Throttle = self.valueMap(self.USBcontrols[0].get_axis(1))
+        self.Roll = self.valueMap(self.USBcontrols[1].get_axis(0))
+        self.Pitch = self.valueMap(self.USBcontrols[1].get_axis(1)) 
         #print(str(self.Yaw) + "," + str(self.Throttle) + "," + str(self.Roll) + "," + str(self.Pitch))
 
-        self.dof4 = [self.Yaw,self.Throttle,self.Roll,self.Pitch]
-        #self.clock.tick(1000)
+        self.dof4 = [self.Pitch,self.Roll,self.Yaw,self.Throttle]
         return self.dof4
 
     def buttonsUSB(self):
@@ -77,7 +89,7 @@ class JoystickUSB(Joystick):
                 if x < 9:
                     self.buttonsB = '00' + str(x+1)
         
-        self.buttons = [bytes(self.buttonsA, 'ascii'),bytes(self.buttonsB, 'ascii')]
+        self.buttons = [self.buttonsA,self.buttonsB]
         return self.buttons
 
     def hatUSB(self):
@@ -106,7 +118,7 @@ class JoystickUSB(Joystick):
             elif hat[1] == -1:
                 self.hatB = '0001'
         
-        self.hat = [bytes(self.hatA, 'ascii'),bytes(self.hatB, 'ascii')]
+        self.hat = [self.hatA,self.hatB]
         return self.hat
     
     def run(self):
@@ -114,10 +126,11 @@ class JoystickUSB(Joystick):
 
 class JoystickCAN(Joystick):
 
-    def __init__(self, joystick, time) -> None:
-        super().__init__(joystick, time) 
+    def __init__(self, joystick, time, modeselect) -> None:
+        super().__init__(joystick, time, modeselect) 
 
     def packetStruct(self):
+        self.packet = self.dataDictionary
         return self.packet
 
     def DOF4ControlCAN(self):
