@@ -29,9 +29,18 @@ import Data
 #gound_or_flight = 'GCS' #GroundControlStation
 gound_or_flight = 'FUI' #Flight UI
 
+'''
 LoraComport = 'COM10'   #Lora Serial Port
 VeronteComport = 'COM9' #Veronte Serial Port
 Serialbitrate = 115200
+'''
+
+
+LoraComport = '/dev/tty9'   #Lora Serial Port
+VeronteComport = '/dev/tty10' #Veronte Serial Port
+Serialbitrate = 115200
+
+
 
 ''' LINUX Systems
 Lora = LoRaComms.LoRaComms('/dev/ttyUSB1',115200)
@@ -45,10 +54,10 @@ veronte = Veronte.Veronte('COM9',115200)
 time.sleep(2)
 '''
 
-TCP_IP = socket.gethostname() #"127.0.0.1"
+TCP_IP = '192.168.1.84'#socket.gethostname() #"127.0.0.1"
 print(TCP_IP)
 TCP_PORT = 1234
-TCP_Buffer = 50
+TCP_Buffer = 16
 
 pygame.init()
 pydisplay = pygame.display
@@ -97,27 +106,24 @@ if __name__ == '__main__':
         if gound_or_flight == 'FUI':
 
             dataThread = threading.Thread(target=dataUpdate)
-            uiThread = threading.Thread(target=data.uiUpdate)
             logThread = threading.Thread(target=data.logUpdate)
             telematryThread = threading.Thread(target=data.telemetryUpdate,daemon=True)
             
             dataThread.start()
-            uiThread.start()
             logThread.start()
             telematryThread.start()
 
             dataThread.join()
-            uiThread.join() 
+           
+            data.uiUpdate()
 
         elif gound_or_flight == 'GCS':
 
             gcsThread = threading.Thread(target=data.gcsUpdate,daemon=True)
-            uiThread = threading.Thread(target=data.uiUpdate)
 
             gcsThread.start()
-            uiThread.start()
 
-            uiThread.join() 
+            data.uiUpdate()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -15,7 +15,7 @@ class LoRa:
         self.packet = bytes('', 'ascii')
 
         self.LoRaSerial =  serial.Serial(self.LoRaport,self.LoRabitrate,timeout = 1) # connect to the LoRa Modules 's serial port
-        self.LoRaSerial.set_buffer_size(rx_size=10000,tx_size=10000)
+        #self.LoRaSerial.set_buffer_size(rx_size=10000,tx_size=10000)
 
         self.tlock = threading.Lock()
 
