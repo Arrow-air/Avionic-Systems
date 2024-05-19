@@ -8,7 +8,7 @@ class TCP:
 
         self.modeselect = modeselect
         self.mode = {0:'GCS',1:'FUI'}
-        self.headersize = 10
+        self.headersize = 16
 
         self.TCP_IP = TCP_IP
         self.TCP_PORT = TCP_PORT
@@ -36,22 +36,33 @@ class TCP:
     def TCPServer(self):
         self.msg  = f'{len(self.packet):<{self.headersize}}' + self.packet 
         self.clientsocket.send(self.msg.encode("utf-8"))
-        print("Address: ",self.addr)
-        print("Message: ",self.msg)
+        #print("Address: ",self.addr)
+        #print("Message: ",self.msg)
             
     def TCPClient(self):
         self.full_msg = ''
         self.new_msg = True
         while True:
-            self.rcmsg = self.socket.recv(2048) 
+            self.rcmsg = self.socket.recv(2048)
             if self.new_msg:
-                print(f"Message Length: {self.rcmsg[:self.headersize]}")
-                self.msglen = int(self.rcmsg[:self.headersize])
+                #print(f"Message Length: {self.rcmsg[:self.headersize]}")
+                self.a = f"{self.rcmsg[:self.headersize]}"
+                self.msglenprim = self.a.split('\'')[1]
+                try:
+                 self.msglenprim = self.msglenprim[0]+self.msglenprim[1]+self.msglenprim[2]+self.msglenprim[3]
+                except:
+                 pass
+                #print(self.msglenprim)
+                try:
+                 self.msglen = int(self.msglenprim)
+                except:
+                 self.msglen = 1070
+                #print(self.msglen)
                 self.new_msg = False
             self.full_msg += self.rcmsg.decode("utf-8")
             if len(self.full_msg) - self.headersize == self.msglen:
                 self.returnmsg = self.rcmsg[self.headersize:].decode("utf-8")
-                print("Message: ",self.returnmsg)
+                #print("Message: ",self.returnmsg)
                 self.new_msg = True
                 self.full_msg = ''
                 return self.returnmsg

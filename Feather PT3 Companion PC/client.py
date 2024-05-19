@@ -3,7 +3,7 @@ import socket
 TCP_IP = socket.gethostname() #"127.0.0.1"
 print(TCP_IP)
 TCP_PORT = 1234
-headersize = 10
+headersize = 16
 
 
 socketc = socket.socket(socket.AF_INET, # Internet

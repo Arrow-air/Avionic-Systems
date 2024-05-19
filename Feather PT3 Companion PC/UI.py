@@ -1,5 +1,6 @@
 from pygame import image, draw, font
 import os
+from main_2screens_2displays import D1, D2
 
 class UI:
 
@@ -28,6 +29,10 @@ class UI:
 
         print('Display No: ' + str(self.display.get_num_displays()))
         print('Display Size: ' + str(self.display.get_window_size()))
+
+        #self.d1 = D1(self.mode)
+        #self.d2 = D2(self.mode)
+        
         print("UI Init")
 
     def uiUpdate(self,packet):

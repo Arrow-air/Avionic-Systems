@@ -68,7 +68,6 @@ class Data:
 
     def uiUpdate(self):
         self.uiPacket = self.packet
-        #print(self.uiPacket)
         self.UI.uiUpdate(self.uiPacket)
         return 0
     
@@ -81,7 +80,6 @@ class Data:
 
     def telemetryUpdate(self):
         self.telemetryPacket = self.packet
-        #print(self.telemetryPacket)
         with self.tlock:
             self.Lora.packet = bytes(str(self.telemetryPacket) + '\n', 'ascii')
             self.Lora.LoRaTransmit()
@@ -92,4 +90,5 @@ class Data:
     def gcsUpdate(self):
         self. dataString = self.TCP.TCPClient()
         self.packet = self.dataString
+        #print(self.dataString)
         #selfdataDictionary = ast.literal_eval(self. dataString)

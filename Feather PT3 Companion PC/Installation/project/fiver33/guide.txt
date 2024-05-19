@@ -1,0 +1,15 @@
+Fisrt make all shell scripts executable:
+chmod +x enable_spi.sh install_dependencies.sh configure_can.sh run_project.sh setup_and_run.sh
+
+
+Run the master script:
+sudo bash setup_and_run.sh
+
+
+After the system reboots, manually run the following commands:
+sudo bash install_dependencies.sh
+sudo bash configure_can.sh
+bash run_project.sh
+
+
+replace "cd /path/to/your/project" with your actually python project path
