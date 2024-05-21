@@ -1,6 +1,6 @@
 import socket 
 
-TCP_IP = '192.168.1.84'#socket.gethostname() #"127.0.0.1"
+TCP_IP = socket.gethostname() #'192.168.1.84'#socket.gethostname() #"127.0.0.1"
 print(TCP_IP)
 TCP_PORT = 1234
 headersize = 16

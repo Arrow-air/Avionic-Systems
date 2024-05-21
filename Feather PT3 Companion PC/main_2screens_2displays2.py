@@ -2,12 +2,6 @@ import multiprocessing
 import time
 import pygame,math
 from pygame import gfxdraw
-import socket
-import ast
-
-#data = filesocket.recv(4048)
-#filesocket.close()
-#print('Received ' + repr(data))
 
 # Initialize Pygame
 pygame.init()
@@ -24,9 +18,7 @@ class D1:
         self.modeselect = modeselect
 
         #pygame.PYGAME_FORCE_SCALE = "photo"
-        self.filesocket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.filesocket.connect("/tmp/socketname")
-
+        
         if self.modeselect == self.mode.get(0):
             self.screen = pygame.display.set_mode((1860,1020), display=display_num)
             print(self.modeselect)
@@ -319,34 +311,7 @@ class D1:
                          (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.medium_font.size("Compass")[0]//2,
                           roll_y + rotated_roll_img.get_height()//2 - self.images["compass"].get_height()//2 - self.images["pointer"].get_height()*2
                           ))
-        
-    def Fileclient(self):
-        self.full_msg = ''
-        self.new_msg = True
-        while True:
-            self.rcmsg = self.filesocket.recv(2048)
-            if self.new_msg:
-                #print(f"Message Length: {self.rcmsg[:self.headersize]}")
-                self.a = f"{self.rcmsg[:self.headersize]}"
-                self.msglenprim = self.a.split('\'')[1]
-                try:
-                    self.msglenprim = self.msglenprim[0]+self.msglenprim[1]+self.msglenprim[2]+self.msglenprim[3]
-                except:
-                    pass
-                    #print(self.msglenprim)
-                try:
-                    self.msglen = int(self.msglenprim)
-                except:
-                    self.msglen = 1070
-                    #print(self.msglen)
-                    self.new_msg = False
-            self.full_msg += self.rcmsg.decode("utf-8")
-            if len(self.full_msg) - self.headersize == self.msglen:
-                self.returnmsg = self.rcmsg[self.headersize:].decode("utf-8")
-                #print("Message: ",self.returnmsg)
-                self.new_msg = True
-                self.full_msg = ''
-                return self.returnmsg
+
 
 def D1_func(gound_or_flight,parameters_dict, display_num):
     # create the class of the window
@@ -354,12 +319,10 @@ def D1_func(gound_or_flight,parameters_dict, display_num):
     # update the class parameters
     D1_ui.parameters = parameters_dict
 
-
     running = True
     i = 0
     while running:
         D1_ui.parameters = parameters_dict
-        print(ast.literal_eval(D1_ui.Fileclient()))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -630,4 +593,4 @@ def controller():
 
 if __name__ == "__main__":
     #controller()
-    D1_func("FUI",parameters,0)
+    D2_func("FUI",parameters,1)

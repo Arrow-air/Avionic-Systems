@@ -1,6 +1,5 @@
-import serial
 import socket
-import time
+import os
 
 class TCP:
 
@@ -27,6 +26,14 @@ class TCP:
             self.socket.bind((self.TCP_IP, self.TCP_PORT))        # Bind to the port
             self.socket.listen(5)                 # Now wait for client connection.
             self.clientsocket, self.addr = self.socket.accept()     # Establish connection with client.
+            self.filesocket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                os.remove("/tmp/socketname")
+            except OSError:
+                pass
+            self.filesocket.bind("/tmp/socketname")
+            self.filesocket.listen(1)
+            self.fileclientsocket, self.fileaddr = self.filesocket.accept()     # Establish connection with client.
 
         if self.modeselect == self.mode.get(0):
             self.socket.connect((self.TCP_IP,self.TCP_PORT))  
@@ -36,6 +43,7 @@ class TCP:
     def TCPServer(self):
         self.msg  = f'{len(self.packet):<{self.headersize}}' + self.packet 
         self.clientsocket.send(self.msg.encode("utf-8"))
+        self.fileclientsocket.send(self.msg.encode("utf-8"))
         #print("Address: ",self.addr)
         #print("Message: ",self.msg)
             
