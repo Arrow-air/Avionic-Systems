@@ -1,5 +1,6 @@
 import socket
 import os
+import time
 
 class TCP:
 
@@ -23,9 +24,6 @@ class TCP:
                                 socket.SOCK_STREAM) # TCP
         
         if self.modeselect == self.mode.get(1):
-            self.socket.bind((self.TCP_IP, self.TCP_PORT))        # Bind to the port
-            self.socket.listen(5)                 # Now wait for client connection.
-            self.clientsocket, self.addr = self.socket.accept()     # Establish connection with client.
             self.filesocket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             try:
                 os.remove("/tmp/socketname")
@@ -34,6 +32,19 @@ class TCP:
             self.filesocket.bind("/tmp/socketname")
             self.filesocket.listen(1)
             self.fileclientsocket, self.fileaddr = self.filesocket.accept()     # Establish connection with client.
+
+            self.filesocket1 = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                os.remove("/tmp/socketname1")
+            except OSError:
+                pass
+            self.filesocket1.bind("/tmp/socketname1")
+            self.filesocket1.listen(1)
+            self.fileclientsocket1, self.fileaddr1 = self.filesocket1.accept()     # Establish connection with client.
+
+            self.socket.bind((self.TCP_IP, self.TCP_PORT))        # Bind to the port
+            self.socket.listen(5)                 # Now wait for client connection.
+            self.clientsocket, self.addr = self.socket.accept()     # Establish connection with client.
 
         if self.modeselect == self.mode.get(0):
             self.socket.connect((self.TCP_IP,self.TCP_PORT))  
@@ -44,6 +55,8 @@ class TCP:
         self.msg  = f'{len(self.packet):<{self.headersize}}' + self.packet 
         self.clientsocket.send(self.msg.encode("utf-8"))
         self.fileclientsocket.send(self.msg.encode("utf-8"))
+        self.fileclientsocket1.send(self.msg.encode("utf-8"))
+        time.sleep(0.05)
         #print("Address: ",self.addr)
         #print("Message: ",self.msg)
             
@@ -51,7 +64,7 @@ class TCP:
         self.full_msg = ''
         self.new_msg = True
         while True:
-            self.rcmsg = self.socket.recv(2048)
+            self.rcmsg = self.socket.recv(8192)
             if self.new_msg:
                 #print(f"Message Length: {self.rcmsg[:self.headersize]}")
                 self.a = f"{self.rcmsg[:self.headersize]}"

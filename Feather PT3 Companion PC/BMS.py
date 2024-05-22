@@ -1,7 +1,7 @@
 import time
 import sys
 import os
-import can
+#import can
 
 class BMS:
 

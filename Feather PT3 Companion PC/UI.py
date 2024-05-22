@@ -1,6 +1,6 @@
 from pygame import image, draw, font
 import os
-from main_2screens_2displays import D1, D2
+#from main_2screens_2displays import D1, D2
 
 class UI:
 

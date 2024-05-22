@@ -15,7 +15,7 @@ import pygame
 import threading
 import socket
 
-import can
+#import can
 import IO
 import UI
 import ESC
@@ -66,17 +66,17 @@ pyjoystick = pygame.joystick
 pyclock = pygame.time.Clock()
 
 if gound_or_flight == 'FUI':
-    io = IO.IO(gound_or_flight)
-    esc = ESC.ESC(gound_or_flight)
-    bms = BMS.BMS(gound_or_flight)
+    #io = IO.IO(gound_or_flight)
+    #esc = ESC.ESC(gound_or_flight)
+    #bms = BMS.BMS(gound_or_flight)
     tcp = TCP.TCP(TCP_IP,TCP_PORT,TCP_Buffer,gound_or_flight)
 
-    lora = LoRa.LoRa(LoraComport,Serialbitrate,gound_or_flight)
-    veronte = Veronte.Veronte(VeronteComport,Serialbitrate,gound_or_flight)
-    ui = UI.UI(pydisplay,pytime,gound_or_flight)
+    lora = 0#LoRa.LoRa(LoraComport,Serialbitrate,gound_or_flight)
+    #veronte = Veronte.Veronte(VeronteComport,Serialbitrate,gound_or_flight)
+    ui = 0#UI.UI(pydisplay,pytime,gound_or_flight)
     data = Data.Data(lora,tcp,ui,gound_or_flight)
 
-    joystickUSB = Joystick.JoystickUSB(pyjoystick,pytime,gound_or_flight)
+    #joystickUSB = Joystick.JoystickUSB(pyjoystick,pytime,gound_or_flight)
     #joystickCAN = Joystick.JoystickCAN(pyjoystick,pytime,gound_or_flight)
 
 elif gound_or_flight == 'GCS':
@@ -88,12 +88,12 @@ elif gound_or_flight == 'GCS':
 tlock = threading.Lock()
 
 def dataUpdate():
-    data.JoystickPacket = joystickUSB.packetStruct()
+    #data.JoystickPacket = joystickUSB.packetStruct()
     #data.JoystickPacket = joystickCAN.packetStruct()
-    data.IOPacket = io.packetStruct()
-    data.ESCPacket = esc.packetStruct()
-    data.BMSPacket  = bms.packetStruct()
-    data.VerontePacket  = veronte.packetStruct()
+    #data.IOPacket = io.packetStruct()
+    #data.ESCPacket = esc.packetStruct()
+    #data.BMSPacket  = bms.packetStruct()
+    #data.VerontePacket  = veronte.packetStruct()
     data.now['TimeStamp'] = str(datetime.now())
     data.packetStruct()
 
@@ -105,17 +105,20 @@ if __name__ == '__main__':
 
         if gound_or_flight == 'FUI':
 
-            dataThread = threading.Thread(target=dataUpdate)
-            logThread = threading.Thread(target=data.logUpdate)
-            telematryThread = threading.Thread(target=data.telemetryUpdate,daemon=True)
+            #dataThread = threading.Thread(target=dataUpdate)
+            #logThread = threading.Thread(target=data.logUpdate)
+            #telematryThread = threading.Thread(target=data.telemetryUpdate,daemon=True)
             
-            dataThread.start()
-            logThread.start()
-            telematryThread.start()
+            #dataThread.start()
+            #logThread.start()
+            #telematryThread.start()
 
-            dataThread.join()
-           
-            data.uiUpdate()
+            #dataThread.join()
+        
+            dataUpdate()
+            #data.logUpdate()
+            data.telemetryUpdate()
+            #data.uiUpdate()
 
         elif gound_or_flight == 'GCS':
 
