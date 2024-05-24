@@ -3,7 +3,7 @@
 # Pls Navigate to your project directory
 cd /home/alexdada/Documents/Avionic-Systems/Feather\ PT3\ Companion\ PC/
 
-# Run your Backend Data Read-Write project
+# Run Backend Data handler
 sudo python3 FCPC.py
 
 # Run System State Window Frontend

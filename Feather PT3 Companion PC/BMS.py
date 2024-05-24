@@ -2,7 +2,7 @@ import time
 import sys
 import os
 import random
-#import can
+import can
 
 class BMS:
 
@@ -17,6 +17,9 @@ class BMS:
                                'BAT4_soc_PCT':0,'BAT5_soc_PCT':0,'BAT6_soc_PCT':0,'MOT1_rpm_PCT':0,'MOT2_rpm_PCT':0,'MOT3_rpm_PCT':0,'MOT4_rpm_PCT':0,
                                'MOT5_rpm_PCT':0,'MOT6_rpm_PCT':0,'ESC1_V':0,'ESC2_V':0,'ESC3_V':0,'ESC4_V':0,'ESC5_V':0,'ESC6_V':0,'ESC1_CUR_AMP':0,
                                'ESC2_CUR_AMP':0,'ESC3_CUR_AMP':0,'ESC4_CUR_AMP':0,'ESC5_CUR_AMP':0,'ESC6_CUR_AMP':0}
+                               
+        can0 = can.interface.Bus(channel = 'can0', bustype = 'socketcan')# socketcan_native
+        
         print("BMS Init")
 
     def packetStruct(self):
@@ -29,4 +32,6 @@ class BMS:
                                'ESC2_CUR_AMP':0,'ESC3_CUR_AMP':0,'ESC4_CUR_AMP':0,'ESC5_CUR_AMP':random.randint(0,100),'ESC6_CUR_AMP':0}
         #self.dataDictionary
         return self.packet
-
+     
+     def canRead(self):
+        
