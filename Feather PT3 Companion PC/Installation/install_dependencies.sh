@@ -48,6 +48,7 @@ sudo apt install RPi.GPIO python3-spidev python3-can
 
 # Install Pygame and PyQT
 sudo apt-get install -y python3-pygame python3-pyqt5
+pip install pygame==2.5.2
 
 # Install CAN & Serial library
 sudo apt-get install python3-can

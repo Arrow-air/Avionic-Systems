@@ -3,5 +3,11 @@
 # Pls Navigate to your project directory
 cd /home/alexdada/Documents/Avionic-Systems/Feather\ PT3\ Companion\ PC/
 
-# Run your Python project
-python3 FCPC.py
+# Run your Backend Data Read-Write project
+sudo python3 FCPC.py
+
+# Run System State Window Frontend
+sudo python3 main_2screens_2displays.py &
+
+# Run System Information Window Frontend
+sudo python3 main_2screens_2displays2.py &

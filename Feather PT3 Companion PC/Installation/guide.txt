@@ -1,5 +1,5 @@
 Fisrt make all shell scripts executable:
-chmod +x enable_spi.sh install_dependencies.sh configure_can.sh run_project.sh setup_and_run.sh
+chmod +x enable_uart_spi.sh install_dependencies.sh configure_can.sh run_project.sh setup_and_run.sh
 
 
 Run the master script:

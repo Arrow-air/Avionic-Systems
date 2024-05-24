@@ -57,8 +57,6 @@ class TCP:
         self.fileclientsocket.send(self.msg.encode("utf-8"))
         self.fileclientsocket1.send(self.msg.encode("utf-8"))
         time.sleep(0.05)
-        #print("Address: ",self.addr)
-        #print("Message: ",self.msg)
             
     def TCPClient(self):
         self.full_msg = ''

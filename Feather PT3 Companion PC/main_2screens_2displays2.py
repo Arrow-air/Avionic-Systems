@@ -1,4 +1,3 @@
-import multiprocessing
 import time
 import pygame,math
 from pygame import gfxdraw
@@ -6,6 +5,7 @@ import socket
 import ast
 import re
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 #data = filesocket.recv(4048)
 #filesocket.close()
@@ -36,7 +36,7 @@ class D2:
             self.screen = pygame.display.set_mode((1860,1020), display=display_num)
             print(self.modeselect)
         elif self.modeselect == self.mode.get(1):
-            self.screen = pygame.display.set_mode((1280,800) ,display=display_num)
+            self.screen = pygame.display.set_mode((1860,1020) ,display=display_num)
             print(self.modeselect)
 
         pygame.display.set_caption('UI Window D2')
@@ -178,6 +178,7 @@ class D2:
         while True:
             with self.tlock:
                 self.rcmsg = self.filesocket1.recv(8192)
+                time.sleep(0.01)
                 if self.new_msg:
                     #print(f"Message Length: {self.rcmsg[:self.headersize]}")
                     self.a = f"{self.rcmsg[:self.headersize]}"
@@ -201,7 +202,7 @@ class D2:
                     self.parameters = self.dicy
                     self.new_msg = True
                     self.full_msg = ''
-                    print(self.parameters)
+                    #print(self.parameters)
                     #return self.parameters
         '''
         #try:
@@ -224,19 +225,6 @@ def D2_func(gound_or_flight,parameters_dict,display_num):
 
     running = True
     while running:
-        #D2_ui.parameters = parameters_dict
-
-        '''
-        #try:
-        stringy = D2_ui.Fileclient().decode("utf-8")
-        #print(stringy)
-        dicy = ast.literal_eval(stringy)
-        D2_ui.parameters = dicy
-        print(D2_ui.parameters)
-        #except:
-        #D2_ui.parameters = parameters_dict
-        #print(D2_ui.parameters)
-        '''
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -249,9 +237,10 @@ def D2_func(gound_or_flight,parameters_dict,display_num):
         D2_ui.draw()
 
         # Update the display
+        
         pygame.display.update()
-        #pygame.display.flip()
-        #pygame.time.Clock.tick(100)
+        clock = pygame.time.Clock()                 # intialise pygame refresh and call it clock
+        clock.tick(10)
 
     # Quit Pygame
     pygame.quit()
@@ -350,4 +339,4 @@ def controller():
     process2.join()
 '''
 if __name__ == "__main__":
-    D2_func("FUI",parameters,0)
+    D2_func("FUI",parameters,1)

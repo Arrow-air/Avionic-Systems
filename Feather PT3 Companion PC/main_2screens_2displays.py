@@ -1,4 +1,3 @@
-import multiprocessing
 import time
 import pygame,math
 from pygame import gfxdraw
@@ -6,6 +5,7 @@ import socket
 import ast
 import re
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 #data = filesocket.recv(4048)
 #filesocket.close()
@@ -38,7 +38,7 @@ class D1:
             self.screen = pygame.display.set_mode((1860,1020), display=display_num)
             print(self.modeselect)
         elif self.modeselect == self.mode.get(1):
-            self.screen = pygame.display.set_mode((1280,800) ,display=display_num)
+            self.screen = pygame.display.set_mode((1860,1020) ,display=display_num)
             print(self.modeselect)
 
         pygame.display.set_caption('UI Window D1')
@@ -160,8 +160,8 @@ class D1:
 
         # placing the text of the speed with it's units
         speed_text_y = 20
-        self.screen.blit( self.bigger_font.render( str(self.parameters["airspeed_KTS"]), True,(255,255,255) ) , (self.bigger_font.size("5")[0]//2,speed_text_y))
-        self.screen.blit( self.font.render( "kt/s", True,(255,255,255) ) , (self.bigger_font.size("5")[0]//2,speed_text_y + self.bigger_font.size("5")[1]))
+        self.screen.blit( self.bigger_font.render( str(round(self.parameters["airspeed_KTS"],1)), True,(255,255,255) ) , (self.bigger_font.size("5")[0]//2,speed_text_y))
+        self.screen.blit( self.font.render( "m/s", True,(255,255,255) ) , (self.bigger_font.size("5")[0]//2,speed_text_y + self.bigger_font.size("5")[1]))
 
         # aircraft height variables(bar variables):
         num_of_lines = 29 # 1 on the text y, 9 below and 9 above
@@ -176,8 +176,8 @@ class D1:
         lines_x = self.screen.get_width() -  line_width*1.2
         height_lines_y = sorted(height_lines_y)
         # aircraft height text bliting
-        self.screen.blit(self.bigger_font.render(str(self.parameters["altitude_AGL"])+"ft", True, (255,255,255)), 
-                         (self.screen.get_width() - line_width*2.6 - self.bigger_font.size(str(self.parameters["altitude_AGL"])+"ft")[0],self.screen.get_height()//2 - self.bigger_font.size("f")[1]//2)
+        self.screen.blit(self.bigger_font.render(str(round(self.parameters["altitude_AGL"],1))+"m", True, (255,255,255)), 
+                         (self.screen.get_width() - line_width*2.6 - self.bigger_font.size(str(round(self.parameters["altitude_AGL"],1))+"m")[0],self.screen.get_height()//2 - self.bigger_font.size("f")[1]//2)
                          )
         # aircraft height bar
         a = 0 # the alpha level(transparency value)
@@ -210,8 +210,8 @@ class D1:
         self.draw_transparent_rect(self.screen,(joystick_size,joystick_width),200,(255,255,255),(joystick_x,joystick_y),2)
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),100,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2))
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),200,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2),2)
-        circle_x = joystick_x + joystick_size//2 + joystick_size //2 * (self.parameters["command_yaw"])
-        circle_y = joystick_y + joystick_width//2 - joystick_size //2 * (self.parameters["command_throttle"])
+        circle_x = joystick_x + joystick_size//2 + (joystick_size //2) * (float(self.parameters["command_yaw"]))
+        circle_y = joystick_y + joystick_width//2 - (joystick_size //2) * (float(self.parameters["command_throttle"]))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width,(255,255,255,100))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width//2,(255,255,255,255))
         pygame.draw.circle(self.screen,(255,255,255),(int(circle_x), int(circle_y)),joystick_width,1)
@@ -230,8 +230,9 @@ class D1:
         self.draw_transparent_rect(self.screen,(joystick_size,joystick_width),200,(255,255,255),(joystick_x,joystick_y),2)
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),100,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2))
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),200,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2),2)
-        circle_x = joystick_x + joystick_size//2 + joystick_size //2 * (self.parameters["command_roll"])
-        circle_y = joystick_y + joystick_width//2 - joystick_size //2 * (self.parameters["command_pitch"])
+        circle_x = joystick_x + joystick_size//2 + (joystick_size //2) * (float(self.parameters["command_roll"]))
+        circle_y = joystick_y + joystick_width//2 - (joystick_size //2) * (float(self.parameters["command_pitch"]))
+        #print(float(self.parameters["command_roll"]))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width,(255,255,255,100))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width//2,(255,255,255,255))
         pygame.draw.circle(self.screen,(255,255,255),(int(circle_x), int(circle_y)),joystick_width,1)
@@ -265,7 +266,7 @@ class D1:
                 # longer line
                 self.draw_transparent_rect(self.screen, (line_size[0]*0.5, line_size[1]*0.8),100,(255,255,255),(small_lines_x, above_center_y),border_radius=0)
                 # angle text
-                self.screen.blit(self.font.render(str(closest_above_round),True,(255,255,255)),(small_lines_x-self.font.size("100")[0]*1.2, above_center_y - self.font.size("1")[1]//2))
+                self.screen.blit(self.font.render(str(round(closest_above_round,1)),True,(255,255,255)),(small_lines_x-self.font.size("100")[0]*1.2, above_center_y - self.font.size("1")[1]//2))
             # shorter line
             self.draw_transparent_rect(self.screen, (line_size[0]*0.25, line_size[1]*0.8),100,(255,255,255),(small_lines_x+line_size[0]*0.5//2-line_size[0]*0.25//2, above_center_y+space_between_lines//2),border_radius=0)
             above_center_y -= space_between_lines
@@ -276,7 +277,7 @@ class D1:
                 # longer line
                 self.draw_transparent_rect(self.screen, (line_size[0]*0.5, line_size[1]*0.8),100,(255,255,255),(small_lines_x, above_center_y),border_radius=0)
                 # angle text
-                self.screen.blit(self.font.render(str(closest_below_round),True,(255,255,255)),(small_lines_x-self.font.size("100")[0]*1.2, above_center_y - self.font.size("1")[1]//2))
+                self.screen.blit(self.font.render(str(round(closest_below_round,1)),True,(255,255,255)),(small_lines_x-self.font.size("100")[0]*1.2, above_center_y - self.font.size("1")[1]//2))
             if above_center_y+space_between_lines//2 < pitch_y +rect_around_pitch_size[1]//2:
                 # shorter line
                 self.draw_transparent_rect(self.screen, (line_size[0]*0.25, line_size[1]*0.8),100,(255,255,255),(small_lines_x+line_size[0]*0.5//2-line_size[0]*0.25//2, above_center_y+space_between_lines//2),border_radius=0)
@@ -285,7 +286,7 @@ class D1:
         # green line in the middle
         pygame.draw.rect(self.screen, (33, 252, 147), [pitch_x + rect_around_pitch_size[0]//2-line_size[0]//2, pitch_y, line_size[0], line_size[1]], border_radius=5)
         # placing the value of it too
-        self.screen.blit(self.medium_font.render(str(pitch_angle),True,(255,255,255)),(pitch_x , pitch_y - self.medium_font.size("1")[1]//2))
+        self.screen.blit(self.medium_font.render(str(round(pitch_angle,1)),True,(255,255,255)),(pitch_x , pitch_y - self.medium_font.size("1")[1]//2))
         
         # roll image showing
         rotated_roll_img = pygame.transform.rotate(self.images["roll"], -self.parameters["attitude_roll"]) # doing minus the angle because pygame rotates to the left side when positive and we need to the right side when positive
@@ -297,7 +298,7 @@ class D1:
                            pitch_y - self.images["roll"].get_height()//2 -self.images["pointer above roll"].get_height()//3
                            ))
         # below roll text
-        self.screen.blit(self.medium_font.render(str(self.parameters["attitude_roll"]),True, (255,255,255)), 
+        self.screen.blit(self.medium_font.render(str(round(self.parameters["attitude_roll"],1)),True, (255,255,255)), 
                          (pitch_x + rect_around_pitch_size[0]*1.1 + self.images["roll"].get_width()//2 - self.medium_font.size(str(self.parameters["attitude_roll"]))[0]//2, 
                           roll_y + rotated_roll_img.get_height()//2 + self.images["roll"].get_height()//2))
         # above roll text
@@ -315,10 +316,10 @@ class D1:
                           roll_y + rotated_roll_img.get_height()//2 - self.images["compass"].get_height()//2 - self.images["pointer"].get_height()
                           ))
         # below compass text
-        self.screen.blit(self.medium_font.render("Compass:"+str(self.parameters["compass"]),True, (255,255,255)), 
+        self.screen.blit(self.medium_font.render("Compass:"+str(round(self.parameters["compass"],1)),True, (255,255,255)), 
                          (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.medium_font.size("Compass:"+str(self.parameters["compass"]))[0]//2, 
                           roll_y + rotated_roll_img.get_height()//2 + self.images["compass"].get_height()//2))
-        self.screen.blit(self.medium_font.render("Heading:"+str(self.parameters["heading"]),True, (255,255,255)), 
+        self.screen.blit(self.medium_font.render("Heading:"+str(round(self.parameters["heading"],1)),True, (255,255,255)), 
                          (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.medium_font.size("Heading:"+str(self.parameters["heading"]))[0]//2, 
                           roll_y + rotated_roll_img.get_height()//2 + self.images["compass"].get_height()//2 + self.medium_font.size("C")[1]))
         # above compass text
@@ -331,6 +332,7 @@ class D1:
         while True:
             with self.tlock:
                 self.rcmsg = self.filesocket.recv(8192)
+                time.sleep(0.01)
                 if self.new_msg:
                     #print(f"Message Length: {self.rcmsg[:self.headersize]}")
                     self.a = f"{self.rcmsg[:self.headersize]}"
@@ -354,7 +356,7 @@ class D1:
                     self.parameters = self.dicy
                     self.new_msg = True
                     self.full_msg = ''
-                    print(self.parameters)
+                    #print(self.parameters)
                     #return self.parameters
 
 def D1_func(gound_or_flight,parameters_dict, display_num):
@@ -365,21 +367,15 @@ def D1_func(gound_or_flight,parameters_dict, display_num):
 
     running = True
     i = 0
+    #with ThreadPoolExecutor(max_workers=100) as executor:  # Adjust max_workers as needed
     while running:
-        #D1_ui.parameters = parameters_dict
-        '''
-        try:
-            stringy = D1_ui.Fileclient().decode("utf-8")
-            dicy = ast.literal_eval(stringy)
-            D1_ui.parameters = dicy
-            print(D1_ui.parameters)
-        except:
-            print(D1_ui.parameters)
-        '''
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
+                
+        #future = executor.submit(D1_ui.Fileclient, parameters)
+        
         dataThread = threading.Thread(target=D1_ui.Fileclient,args=(D1_ui.parameters,),daemon=True)
         dataThread.start()
         #dataThread.join()
@@ -388,6 +384,8 @@ def D1_func(gound_or_flight,parameters_dict, display_num):
         i += 1
         # Update the display
         pygame.display.update()
+        clock = pygame.time.Clock()                 # intialise pygame refresh and call it clock
+        clock.tick(6)
 
     # Quit Pygame
     pygame.quit()
@@ -463,27 +461,7 @@ parameters = {
     "ESC6_CUR_AMP":0,
     "TimeStamp":0
 }
-'''
-# Controller function to manage both functions using multiprocessing
-def controller():
-    manager = multiprocessing.Manager()
-    params_dict = manager.dict(parameters)
 
-    # Create separate processes for func1 and func2
-    process1 = multiprocessing.Process(target=D1_func, args=(params_dict,0,))
-    process2 = multiprocessing.Process(target=D2_func, args=(params_dict,1,))
-
-    # Start both processes
-    process1.start()
-    process2.start()
-    
-    # actions that will happen while the processors run
-    # change the param_dict which is the shared dict between the processors in order to have the values changed
-    
-    # Wait for both processes to finish
-    process1.join()
-    process2.join()
-'''
 if __name__ == "__main__":
     #controller()
     D1_func("FUI",parameters,0)

@@ -27,11 +27,15 @@ class LoRa:
         time.sleep(0.2)
     
     def LoRaReceive(self):
+            
+        self.Dataleft = self.LoRaSerial.inWaiting()
+        
         while self.Dataleft > 0:
             self.Data = self.LoRaSerial.read()
             time.sleep(0.01)
-            self.Dataleft = self.LoRaSerial.in_waiting()
+            self.Dataleft = self.LoRaSerial.inWaiting()
             self.Data += self.LoRaSerial.read(self.Dataleft)
+            
         return self.Data
 
     ''' Lora Configuration Commands

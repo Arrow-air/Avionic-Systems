@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Enable UART
+if ! grep -q "^enable_uart=1" /boot/firmware/config.txt; then
+    echo "enable_uart=1" | sudo tee -a /boot/firmware/config.txt
+fi
+
 # Enable SPI
 if ! grep -q "^dtparam=spi=on" /boot/firmware/config.txt; then
     echo "dtparam=spi=on" | sudo tee -a /boot/firmware/config.txt

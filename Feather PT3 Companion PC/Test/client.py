@@ -35,7 +35,7 @@ while True:
         full_msg += rcmsg.decode("utf-8")
         if len(full_msg) - headersize == msglen:
             returnmsg = rcmsg[headersize:].decode("utf-8")
-            print("Message: ",returnmsg)
+            #print("Message: ",returnmsg)
             new_msg = True
             full_msg = ''
             #return returnmsg
