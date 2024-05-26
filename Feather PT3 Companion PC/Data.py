@@ -1,7 +1,6 @@
 from datetime import datetime
 import os
 import threading
-import ast
 
 class Data:
 
@@ -10,7 +9,7 @@ class Data:
         self.modeselect = modeselect
         self.mode = {0:'GCS',1:'FUI'}
 
-        self.Lora = Lora
+        #self.Lora = Lora
         #self.Lora.LoRaconfig()
         
         self.TCP = TCP
@@ -31,10 +30,10 @@ class Data:
                                'BAT4_soc_PCT':0,'BAT5_soc_PCT':0,'BAT6_soc_PCT':0,'MOT1_rpm_PCT':0,'MOT2_rpm_PCT':0,'MOT3_rpm_PCT':0,'MOT4_rpm_PCT':0,
                                'MOT5_rpm_PCT':100,'MOT6_rpm_PCT':50,'ESC1_V':0,'ESC2_V':0,'ESC3_V':0,'ESC4_V':0,'ESC5_V':0,'ESC6_V':100,'ESC1_CUR_AMP':0,
                                'ESC2_CUR_AMP':0,'ESC3_CUR_AMP':0,'ESC4_CUR_AMP':0,'ESC5_CUR_AMP':0,'ESC6_CUR_AMP':0}
-        self.IOPacket = []
-        self.ESCPacket = []
+        self.IOPacket = {}
+        self.ESCPacket = {}
 
-        self.dataDictionary = ''
+        self.dataDictionary = {}
 
         
         self.parameters = {

@@ -1,9 +1,6 @@
 import time
-import sys
-import os
 import serial
 import random
-import ast
 
 class Veronte:
 

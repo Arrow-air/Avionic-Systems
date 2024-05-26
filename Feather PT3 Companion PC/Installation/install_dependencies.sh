@@ -5,7 +5,8 @@ sudo apt-get update
 
 # Install bcm2835
 wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.60.tar.gz
-tar zxvf bcm2835-1.60.tar.gz 
+tar zxvf bcm2835-1.60.tar.gz
+rm bcm2835-1.60.tar.gz
 cd bcm2835-1.60/
 sudo ./configure
 sudo make
@@ -33,6 +34,7 @@ cd ..
 wget https://files.waveshare.com/upload/8/8c/WiringPi-master.zip
 sudo apt-get install unzip
 unzip WiringPi-master.zip
+rm WiringPi-master.zip
 cd WiringPi-master/
 sudo ./build
 cd ..
@@ -53,3 +55,6 @@ pip install pygame==2.5.2
 # Install CAN & Serial library
 sudo apt-get install python3-can
 sudo apt-get install python3-serial
+
+# Install Cyphal CAN Library
+pip install 'pycyphal[transport-can-pythoncan,transport-serial,transport-udp]'

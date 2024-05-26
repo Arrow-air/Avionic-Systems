@@ -23,10 +23,10 @@ from datetime import datetime
 
 #Created Packages 
 import IO
-import UI
+#import UI
 import ESC
 import BMS
-import LoRa
+#import LoRa
 import TCP
 import Data
 import Veronte
@@ -81,7 +81,7 @@ elif gound_or_flight == 'GCS':
     #ui = UI.UI(pydisplay,pytime,gound_or_flight)
     data = Data.Data(tcp,gound_or_flight)
 
-tlock = threading.Lock()
+#tlock = threading.Lock()
 
 EXIT = False
 
@@ -96,15 +96,15 @@ if __name__ == '__main__':
             #data.JoystickPacket = joystickCAN.packetStruct()
             #data.IOPacket = io.packetStruct()
             #data.ESCPacket = esc.packetStruct()
-            data.VerontePacket  = veronte.packetStruct()
-            data.BMSPacket  = bms.packetStruct()
+            data.VerontePacket = veronte.packetStruct()
+            data.BMSPacket = bms.packetStruct()
             data.now['TimeStamp'] = str(datetime.now())
             data.packetStruct()
             
             #Wrtie Data log file
             #data.logUpdate()
             
-            #Send Data to GCS
+            #Send Data to GCS Telemetry
             data.telemetryUpdate()
 
         elif gound_or_flight == 'GCS':
@@ -114,18 +114,16 @@ if __name__ == '__main__':
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                lora.LoraTerminate()
+                #lora.LoraTerminate()
                 tcp.TCPTerminate()
                 pygame.quit()
                 EXIT = True
 
         if  str(data.JoystickPacket['switch_states']) == '001000' or str(data.JoystickPacket['switch_states']) == '001026' or str(data.JoystickPacket['switch_states']) == '000001':
-            lora.LoraTerminate()
+            #lora.LoraTerminate()
             tcp.TCPTerminate()
             pygame.quit()
             quit()
 
     pygame.quit()
     quit()
-
-

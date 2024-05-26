@@ -3,13 +3,8 @@ import pygame,math
 from pygame import gfxdraw
 import socket
 import ast
-import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
-
-#data = filesocket.recv(4048)
-#filesocket.close()
-#print('Received ' + repr(data))
 
 # Initialize Pygame
 pygame.init()
@@ -25,7 +20,6 @@ class D1:
         self.mode = {0:'GCS',1:'FUI'}
         self.modeselect = modeselect
 
-        #pygame.PYGAME_FORCE_SCALE = "photo"
         self.filesocket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.filesocket.connect("/tmp/socketname")
         self.headersize = 16

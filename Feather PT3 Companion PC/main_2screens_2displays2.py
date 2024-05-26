@@ -3,13 +3,8 @@ import pygame,math
 from pygame import gfxdraw
 import socket
 import ast
-import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
-
-#data = filesocket.recv(4048)
-#filesocket.close()
-#print('Received ' + repr(data))
 
 # Initialize Pygame
 pygame.init()
@@ -204,18 +199,6 @@ class D2:
                     self.full_msg = ''
                     #print(self.parameters)
                     #return self.parameters
-        '''
-        #try:
-            self.stringy = self.rcmsg.decode("utf-8")
-            #print(stringy)
-            self.dicy = ast.literal_eval(self.stringy)
-            self.parameters = self.dicy
-            print(self.parameters)
-       # except:
-        #    self.parameters = parameters_dict
-        #    print(self.parameters)
-        return self.parameters
-        '''
 
 def D2_func(gound_or_flight,parameters_dict,display_num):
     # create the class of the window
@@ -317,26 +300,6 @@ parameters = {
     "ESC6_CUR_AMP":0,
     "TimeStamp":0
 }
-'''
-# Controller function to manage both functions using multiprocessing
-def controller():
-    manager = multiprocessing.Manager()
-    params_dict = manager.dict(parameters)
 
-    # Create separate processes for func1 and func2
-    process1 = multiprocessing.Process(target=D1_func, args=(params_dict,0,))
-    process2 = multiprocessing.Process(target=D2_func, args=(params_dict,1,))
-
-    # Start both processes
-    process1.start()
-    process2.start()
-    
-    # actions that will happen while the processors run
-    # change the param_dict which is the shared dict between the processors in order to have the values changed
-    
-    # Wait for both processes to finish
-    process1.join()
-    process2.join()
-'''
 if __name__ == "__main__":
     D2_func("FUI",parameters,1)
