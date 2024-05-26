@@ -5,7 +5,6 @@ chmod +x enable_uart_spi.sh install_dependencies.sh configure_can.sh run_project
 Run the master script:
 sudo bash setup_and_run.sh
 
-
 After the system reboots, manually run the following commands:
 sudo bash install_dependencies.sh
 sudo bash configure_can.sh
