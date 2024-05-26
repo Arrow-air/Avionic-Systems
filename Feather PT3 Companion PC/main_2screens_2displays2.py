@@ -62,10 +62,12 @@ class D2:
         self.screen.fill((65, 95, 255))
 
     def draw_circle_info(self, motor_num,x,y,outer_circle_size, text_side):
+
         # BAT,ESC color
         circle_center = (x + outer_circle_size[0]//2, y + outer_circle_size[1]//2)
         bat_value = self.parameters["BAT"+str(motor_num)+"_temp_C"]
         esc_value = self.parameters["ESC"+str(motor_num)+"_temp_C"]
+
         # drawing the battery color which is a ring around the motor circle
         battery_percentage = self.parameters["BAT"+str(motor_num)+"_soc_PCT"] / 100 # divide by 100 to get the percentage as a number between 0-1
         battery_ring_color = (255 - int(255*battery_percentage), int(255*battery_percentage),0)
@@ -92,9 +94,8 @@ class D2:
                     ratio_to_size = d_y2_y/outer_circle_size[1]
                     if ratio_to_size <= battery_percentage:
                         self.screen.set_at((x2,y2),battery_ring_color)
-        
-
         self.screen.blit(self.images["motor circle"], (x,y))
+
         # rpm text
         self.screen.blit(self.small_font.render(str(self.parameters["MOT"+str(motor_num)+"_rpm_PCT"]),True,(0,0,0)), (x + outer_circle_size[0]//2 - self.small_font.size(str(self.parameters["MOT"+str(motor_num)+"_rpm_PCT"]))[0]//2,y + outer_circle_size[1]//2 - self.small_font.size("R")[1]))
         self.screen.blit(self.small_font.render("RPM",True,(100,100,100)), (x + outer_circle_size[0]//2 - self.small_font.size("RPM")[0]//2,y + outer_circle_size[1]//2))
@@ -122,6 +123,7 @@ class D2:
             self.screen.blit(self.font.render("Power: "+str(self.parameters["ESC"+str(motor_num)+"_CUR_AMP"]*self.parameters["ESC"+str(motor_num)+"_V"]),True,(255,255,255)), (text_x, y + outer_circle_size[1]//2 + self.medium_small_font.size("P")[1]))
         
     def draw(self):
+
         self.background()
 
         structure_size = self.images["structure"].get_size()
@@ -137,7 +139,6 @@ class D2:
         pygame.draw.line(self.screen, (255,255,255), (x+motor_circle_size[0]*0.85,y+motor_circle_size[1]*0.85), (x+motor_circle_size[0]*1.1,y+motor_circle_size[1]*1.1),10)
         self.draw_circle_info(1,x,y,motor_circle_size,'l')
 
-        
         # left middle
         x = structure_x - motor_circle_size[0]*1.1
         y = structure_y + structure_size[1]//2 - motor_circle_size[1]//2
@@ -171,9 +172,12 @@ class D2:
 
     def Fileclient(self,parameters_dict):
         while True:
+
             with self.tlock:
+                
                 self.rcmsg = self.filesocket1.recv(8192)
                 time.sleep(0.01)
+
                 if self.new_msg:
                     #print(f"Message Length: {self.rcmsg[:self.headersize]}")
                     self.a = f"{self.rcmsg[:self.headersize]}"
@@ -190,6 +194,7 @@ class D2:
                         #print(self.msglen)
                     self.new_msg = False
                 self.full_msg += self.rcmsg.decode("utf-8")
+
                 if len(self.full_msg) - self.headersize == self.msglen:
                     self.returnmsg = self.rcmsg[self.headersize:].decode("utf-8")
                     #print("Message: ",self.returnmsg)
@@ -201,8 +206,10 @@ class D2:
                     #return self.parameters
 
 def D2_func(gound_or_flight,parameters_dict,display_num):
+
     # create the class of the window
     D2_ui = D2(gound_or_flight,display_num)
+
     # update the class parameters
     D2_ui.parameters = parameters_dict
 
@@ -215,19 +222,18 @@ def D2_func(gound_or_flight,parameters_dict,display_num):
         
         dataThread = threading.Thread(target=D2_ui.Fileclient,args=(D2_ui.parameters,),daemon=True)
         dataThread.start()
-        #dataThread.join()
        
         D2_ui.draw()
 
         # Update the display
-        
         pygame.display.update()
-        clock = pygame.time.Clock()                 # intialise pygame refresh and call it clock
+
+        # intialise pygame refresh rate and call it clock
+        clock = pygame.time.Clock()
         clock.tick(10)
 
     # Quit Pygame
     pygame.quit()
-
 
 parameters = {
     "altitude_AGL":0,
@@ -302,4 +308,5 @@ parameters = {
 }
 
 if __name__ == "__main__":
+
     D2_func("FUI",parameters,1)

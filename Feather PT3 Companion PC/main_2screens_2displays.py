@@ -87,6 +87,7 @@ class D1:
 
     def background(self):
         self.screen.fill((65, 95, 255))
+
     def draw_transparent_rect(self,win,size,alpha_level,color,pos, border_width = None, border_radius=5):
         transparent_surface = pygame.Surface((size[0], size[1]), pygame.SRCALPHA)
         if border_width == None:
@@ -96,16 +97,18 @@ class D1:
         win.blit(transparent_surface, (pos[0],pos[1]))
 
     def draw(self):
+
         self.background()
+
         # show the warnings
-        # warning are on the right screen(right part of the window)(D2)
+        # warning are on the Left screen(Left part of the window)(D1)
         warnings = self.check_for_warning()
         if warnings != []:
             warnings = ", ".join(warnings)
             text = "Warning: " + warnings + " has exceeded tolerance!"
 
             max_text_width = self.screen.get_width()//5*4
-            x =  self.screen.get_width() - max_text_width - self.bigger_font.size("5")[0] # the warnings are on the right part of the second screen(D2), doing minus the size of 5 because there are the lines of the height and this is how they are made
+            x =  self.screen.get_width() - max_text_width - self.bigger_font.size("5")[0] # the warnings are on the right part of the first screen(D1), doing minus the size of 5 because there are the lines of the height and this is how they are made
             y = 20 # leaving space for the speed text
 
             current_text = ""
@@ -169,10 +172,12 @@ class D1:
             height_lines_y.append(y)
         lines_x = self.screen.get_width() -  line_width*1.2
         height_lines_y = sorted(height_lines_y)
+        
         # aircraft height text bliting
         self.screen.blit(self.bigger_font.render(str(round(self.parameters["altitude_AGL"],1))+"m", True, (255,255,255)), 
                          (self.screen.get_width() - line_width*2.6 - self.bigger_font.size(str(round(self.parameters["altitude_AGL"],1))+"m")[0],self.screen.get_height()//2 - self.bigger_font.size("f")[1]//2)
                          )
+        
         # aircraft height bar
         a = 0 # the alpha level(transparency value)
         a_goes_up = True
@@ -194,7 +199,8 @@ class D1:
                     if a < 0:
                         a = 1
 
-        # the joysticks + flight time
+        # The joysticks + flight time
+
         # left joystick
         joystick_size = self.screen.get_height()//5
         joystick_width = joystick_size//10
@@ -204,8 +210,8 @@ class D1:
         self.draw_transparent_rect(self.screen,(joystick_size,joystick_width),200,(255,255,255),(joystick_x,joystick_y),2)
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),100,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2))
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),200,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2),2)
-        circle_x = joystick_x + joystick_size//2 + (joystick_size //2) * (float(self.parameters["command_yaw"]))
-        circle_y = joystick_y + joystick_width//2 - (joystick_size //2) * (float(self.parameters["command_throttle"]))
+        circle_x = joystick_x + joystick_size//2 + (joystick_size //2) * (round(float(self.parameters["command_yaw"]),1))
+        circle_y = joystick_y + joystick_width//2 - (joystick_size //2) * (round(float(self.parameters["command_throttle"]),1))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width,(255,255,255,100))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width//2,(255,255,255,255))
         pygame.draw.circle(self.screen,(255,255,255),(int(circle_x), int(circle_y)),joystick_width,1)
@@ -224,9 +230,8 @@ class D1:
         self.draw_transparent_rect(self.screen,(joystick_size,joystick_width),200,(255,255,255),(joystick_x,joystick_y),2)
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),100,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2))
         self.draw_transparent_rect(self.screen,(joystick_width,joystick_size),200,(255,255,255),(joystick_x + joystick_size//2 - joystick_width//2,joystick_y - joystick_size//2 + joystick_width//2),2)
-        circle_x = joystick_x + joystick_size//2 + (joystick_size //2) * (float(self.parameters["command_roll"]))
-        circle_y = joystick_y + joystick_width//2 - (joystick_size //2) * (float(self.parameters["command_pitch"]))
-        #print(float(self.parameters["command_roll"]))
+        circle_x = joystick_x + joystick_size//2 + (joystick_size //2) * (round(float(self.parameters["command_roll"]),1))
+        circle_y = joystick_y + joystick_width//2 - (joystick_size //2) * (round(float(self.parameters["command_pitch"]),1))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width,(255,255,255,100))
         gfxdraw.filled_circle(self.screen, int(circle_x), int(circle_y),joystick_width//2,(255,255,255,255))
         pygame.draw.circle(self.screen,(255,255,255),(int(circle_x), int(circle_y)),joystick_width,1)
@@ -239,22 +244,27 @@ class D1:
         self.screen.blit(self.medium_font.render("Long: " + self.parameters["longitude"], True, (255,255,255)),(position_in_angle_text_pos[0],position_in_angle_text_pos[1]+self.medium_font.size("L")[1]))
         
         # rotate forward representation, attitude pitch
-        pitch_angle = self.parameters["attitude_pitch"]
+        pitch_angle = round(self.parameters["attitude_pitch"],1)
         line_size = (self.images["compass"].get_width()//3*1.2, self.images["compass"].get_width()//3//8)
         pitch_x = position_in_angle_text_pos[0] +self.medium_font.size("Long: " + self.parameters["longitude"]+"AA")[0] #line_size[0]
         pitch_y = joystick_y - joystick_size*2
+        
         # define and draw the rect around it
         rect_around_pitch_size = (line_size[0]*2, line_size[0]*3)
         self.draw_transparent_rect(self.screen, rect_around_pitch_size,200,(255,255,255), (pitch_x, pitch_y-rect_around_pitch_size[1]//2), 1)
+        
         # draw the text above it that states what it is
         self.screen.blit(self.medium_font.render("Attitude Pitch",True,(255,255,255)),(pitch_x, pitch_y-rect_around_pitch_size[1]//2 - self.medium_font.size("A")[1]*1.1))
-        # drawing the lines
+        
+        # Drawing the lines
+
         # drawing the lines that shown the angle using the ratio
         closest_above_round = pitch_angle + (10 -(pitch_angle%10)) # closest number above the current angle
         closest_below_round = pitch_angle - (pitch_angle%10) # closest number below the current angle
         space_between_lines = line_size[0]//2
         above_center_y = pitch_y - space_between_lines*((10 -(pitch_angle%10))/10)
         small_lines_x = pitch_x + rect_around_pitch_size[0]//2-line_size[0]*0.5//2
+
         while above_center_y > pitch_y -rect_around_pitch_size[1]//2:
             if above_center_y - line_size[1] > pitch_y -rect_around_pitch_size[1]//2: # if the y of this is in the rect but the text won't be inside we draw only the smaller line
                 # longer line
@@ -266,6 +276,7 @@ class D1:
             above_center_y -= space_between_lines
             closest_above_round += 10
         above_center_y = pitch_y - space_between_lines*((10 -(pitch_angle%10))/10) + space_between_lines
+
         while above_center_y < pitch_y +rect_around_pitch_size[1]//2:
             if above_center_y + line_size[1] < pitch_y +rect_around_pitch_size[1]//2: # if the y of this is in the rect but the text won't be inside we draw only the smaller line
                 # longer line
@@ -277,13 +288,15 @@ class D1:
                 self.draw_transparent_rect(self.screen, (line_size[0]*0.25, line_size[1]*0.8),100,(255,255,255),(small_lines_x+line_size[0]*0.5//2-line_size[0]*0.25//2, above_center_y+space_between_lines//2),border_radius=0)
             above_center_y += space_between_lines
             closest_below_round -= 10
+        
         # green line in the middle
         pygame.draw.rect(self.screen, (33, 252, 147), [pitch_x + rect_around_pitch_size[0]//2-line_size[0]//2, pitch_y, line_size[0], line_size[1]], border_radius=5)
+        
         # placing the value of it too
         self.screen.blit(self.medium_font.render(str(round(pitch_angle,1)),True,(255,255,255)),(pitch_x , pitch_y - self.medium_font.size("1")[1]//2))
         
         # roll image showing
-        rotated_roll_img = pygame.transform.rotate(self.images["roll"], -self.parameters["attitude_roll"]) # doing minus the angle because pygame rotates to the left side when positive and we need to the right side when positive
+        rotated_roll_img = pygame.transform.rotate(self.images["roll"], round(-self.parameters["attitude_roll"],1)) # doing minus the angle because pygame rotates to the left side when positive and we need to the right side when positive
         roll_x = pitch_x + rect_around_pitch_size[0]*1.1 + self.images["roll"].get_width()//2 - rotated_roll_img.get_width()//2 # on the right side of the pitch angle representation
         roll_y = pitch_y - rotated_roll_img.get_height()//2 
         self.screen.blit(rotated_roll_img,(roll_x,roll_y))
@@ -291,30 +304,35 @@ class D1:
                          (pitch_x + rect_around_pitch_size[0]*1.1 + self.images["roll"].get_width()//2 - self.images["pointer above roll"].get_width()//2,
                            pitch_y - self.images["roll"].get_height()//2 -self.images["pointer above roll"].get_height()//3
                            ))
+        
         # below roll text
         self.screen.blit(self.medium_font.render(str(round(self.parameters["attitude_roll"],1)),True, (255,255,255)), 
-                         (pitch_x + rect_around_pitch_size[0]*1.1 + self.images["roll"].get_width()//2 - self.medium_font.size(str(self.parameters["attitude_roll"]))[0]//2, 
+                         (pitch_x + rect_around_pitch_size[0]*1.1 + self.images["roll"].get_width()//2 - self.medium_font.size(str(round(self.parameters["attitude_roll"],1)))[0]//2, 
                           roll_y + rotated_roll_img.get_height()//2 + self.images["roll"].get_height()//2))
+        
         # above roll text
         self.screen.blit(self.medium_font.render("Attitude Roll",True, (255,255,255)), 
                     (pitch_x + rect_around_pitch_size[0]*1.1 + self.images["roll"].get_width()//2 - self.medium_font.size("Attitude Roll")[0]//2,
                     pitch_y - self.images["roll"].get_height()//2 -self.images["pointer above roll"].get_height()//3 - self.medium_font.size("A")[1]
                     ))
+        
         # compass image showing
-        rotated_compass = pygame.transform.rotate(self.images["compass"], self.parameters["compass"])
+        rotated_compass = pygame.transform.rotate(self.images["compass"], round(self.parameters["compass"],1))
         compass_x = pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - rotated_compass.get_width()//2 # on the right side of the roll angle representation
         compass_y = roll_y + rotated_roll_img.get_height()//2 - rotated_compass.get_height()//2  #self.screen.get_height()//2 - rotated_compass.get_height()//2
         self.screen.blit(rotated_compass,(compass_x,compass_y))
+        
         self.screen.blit(self.images["pointer"],
                          (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.images["pointer"].get_width()//2,
                           roll_y + rotated_roll_img.get_height()//2 - self.images["compass"].get_height()//2 - self.images["pointer"].get_height()
                           ))
         # below compass text
         self.screen.blit(self.medium_font.render("Compass:"+str(round(self.parameters["compass"],1)),True, (255,255,255)), 
-                         (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.medium_font.size("Compass:"+str(self.parameters["compass"]))[0]//2, 
+                         (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.medium_font.size("Compass:"+str(round(self.parameters["compass"],1)))[0]//2, 
                           roll_y + rotated_roll_img.get_height()//2 + self.images["compass"].get_height()//2))
+        
         self.screen.blit(self.medium_font.render("Heading:"+str(round(self.parameters["heading"],1)),True, (255,255,255)), 
-                         (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.medium_font.size("Heading:"+str(self.parameters["heading"]))[0]//2, 
+                         (pitch_x + self.images["roll"].get_width()*2 + self.images["compass"].get_width()//2 - self.medium_font.size("Heading:"+str(round(self.parameters["heading"],1)))[0]//2, 
                           roll_y + rotated_roll_img.get_height()//2 + self.images["compass"].get_height()//2 + self.medium_font.size("C")[1]))
         # above compass text
         self.screen.blit(self.medium_font.render("Compass",True, (255,255,255)), 
@@ -324,9 +342,12 @@ class D1:
 
     def Fileclient(self,parameters_dict):
         while True:
+            
             with self.tlock:
+
                 self.rcmsg = self.filesocket.recv(8192)
                 time.sleep(0.01)
+
                 if self.new_msg:
                     #print(f"Message Length: {self.rcmsg[:self.headersize]}")
                     self.a = f"{self.rcmsg[:self.headersize]}"
@@ -343,6 +364,7 @@ class D1:
                         #print(self.msglen)
                     self.new_msg = False
                 self.full_msg += self.rcmsg.decode("utf-8")
+
                 if len(self.full_msg) - self.headersize == self.msglen:
                     self.returnmsg = self.rcmsg[self.headersize:].decode("utf-8")
                     #print("Message: ",self.returnmsg)
@@ -354,13 +376,16 @@ class D1:
                     #return self.parameters
 
 def D1_func(gound_or_flight,parameters_dict, display_num):
+
     # create the class of the window
     D1_ui = D1(gound_or_flight,display_num)
+
     # update the class parameters
     D1_ui.parameters = parameters_dict
 
     running = True
     i = 0
+
     #with ThreadPoolExecutor(max_workers=100) as executor:  # Adjust max_workers as needed
     while running:
         
@@ -376,9 +401,12 @@ def D1_func(gound_or_flight,parameters_dict, display_num):
 
         D1_ui.draw()
         i += 1
+
         # Update the display
         pygame.display.update()
-        clock = pygame.time.Clock()                 # intialise pygame refresh and call it clock
+
+        # intialise pygame refresh rate and call it clock
+        clock = pygame.time.Clock()
         clock.tick(6)
 
     # Quit Pygame
@@ -457,5 +485,5 @@ parameters = {
 }
 
 if __name__ == "__main__":
-    #controller()
+
     D1_func("FUI",parameters,0)

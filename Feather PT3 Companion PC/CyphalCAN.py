@@ -89,11 +89,3 @@ class CyphalCAN:
 
     def get_data(self):
         return self.esc_data
-
-# Example usage:
-# esc = CyphalCAN(iface='can0')
-# asyncio.run(esc.send_command(node_id=10, command=0x01))
-# asyncio.run(esc.read_register(node_id=10, register_index=0x04))
-# asyncio.run(esc.receive_data())
-# data = esc.get_data()
-# print(data)

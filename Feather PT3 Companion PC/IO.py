@@ -8,7 +8,7 @@ class IO:
         self.modeselect = modeselect
         self.mode = {0:'GCS',1:'FUI'}
 
-        self.packet = ['']
+        self.packet = {}
         print("IO Init")
 
     def readIO(self):

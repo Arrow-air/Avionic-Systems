@@ -14,7 +14,7 @@ class Data:
         
         self.TCP = TCP
 
-        self.packet = ''
+        self.packet = {}
         self.dataString = ''
         
         self.tlock = threading.Lock()

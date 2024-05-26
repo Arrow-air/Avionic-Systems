@@ -118,6 +118,3 @@ class VESCCAN:
             self.msgData['raw_data'] = data
 
         return self.msgData
-
-#can_id = calculate_can_id(controller_id, command_number)
-#print(f"CAN ID: 0x{can_id:X}")  # Output: CAN ID: 0x901

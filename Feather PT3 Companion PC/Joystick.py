@@ -20,7 +20,7 @@ class Joystick:
         self.USBJoystick = self.joystick.get_init()
         self.CANJoystick = JoystickCAN.isPresent(self)
 
-        self.packet = []
+        self.packet = {}
 
         if self.USBJoystick == True:
             self.USBcontrols = [self.joystick.Joystick(id) for id in range(self.joystick.get_count())]      # call the joystick controls

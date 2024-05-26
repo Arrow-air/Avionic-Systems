@@ -61,6 +61,7 @@ pyclock = pygame.time.Clock()
 
 #Module Initialisation for onboard Flight UI
 if gound_or_flight == 'FUI':
+
     io = IO.IO(gound_or_flight)
     esc = ESC.ESC(gound_or_flight)
     bms = BMS.BMS(gound_or_flight)
@@ -76,6 +77,7 @@ if gound_or_flight == 'FUI':
 
 #Module Initialisation for GroundControl UI
 elif gound_or_flight == 'GCS':
+
     tcp = TCP.TCP(TCP_IP,TCP_PORT,TCP_Buffer,gound_or_flight)
     #lora = LoRa.LoRa(LoraComport,Serialbitrate,gound_or_flight)
     #ui = UI.UI(pydisplay,pytime,gound_or_flight)
@@ -113,13 +115,16 @@ if __name__ == '__main__':
             data.gscUpdate()
 
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
+
                 #lora.LoraTerminate()
                 tcp.TCPTerminate()
                 pygame.quit()
                 EXIT = True
 
         if  str(data.JoystickPacket['switch_states']) == '001000' or str(data.JoystickPacket['switch_states']) == '001026' or str(data.JoystickPacket['switch_states']) == '000001':
+            
             #lora.LoraTerminate()
             tcp.TCPTerminate()
             pygame.quit()
