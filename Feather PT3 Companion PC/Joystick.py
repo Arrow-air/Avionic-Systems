@@ -1,3 +1,4 @@
+import j1939
 
 class Joystick:
     
@@ -130,23 +131,62 @@ class JoystickCAN(Joystick):
     def __init__(self, joystick, time, modeselect) -> None:
         super().__init__(joystick, time, modeselect) 
 
+        self.bus = j1939.Bus(interface='can1')
+        self.node = j1939.Node(name=0x12345, bus=self.bus)
+
+        # Add some callbacks for message handling
+        self.node.add_handler(self.joystick1_callback, pgn=0x00FDD6)
+        self.node.add_handler(self.joystick2_callback, pgn=0x00FDD8)
+
+        self.joystick_data = {
+            "joystick_1": {"x": None, "y": None, "buttons": []},
+            "joystick_2": {"x": None, "y": None, "buttons": []}
+        }
+
+        self.packet = {}
+
+        self.start()
+
     def packetStruct(self):
+        
+        self.read_joysticks()
+
+        self.dataDictionary['command_pitch'] = self.joystick_data["joystick_2"]["y"]
+        self.dataDictionary['command_roll'] = self.joystick_data["joystick_2"]["y"]
+        self.dataDictionary['command_yaw'] = self.joystick_data["joystick_1"]["x"]
+        self.dataDictionary['command_throttle'] = self.joystick_data["joystick_1"]["x"]
+        self.dataDictionary['switch_states'] = (self.joystick_data["joystick_1"]["buttons"]).join(',') + (self.joystick_data["joystick_2"]["buttons"]).join(',')
+
         self.packet = self.dataDictionary
         return self.packet
-
-    def DOF4ControlCAN(self):
-         pass
-    
-    def buttonsCAN(self):
-         pass
-    
-    def hatCAN(self):
-         pass
     
     def isPresent(self):
-        self.Present = False
+
+        self.read_joysticks()
+        
+        if (self.joystick_data["joystick_2"]["y"] == None ) or (self.joystick_data["joystick_1"]["y"] == None):
+            self.Present = False
+        else:
+            self.Present = True
+
         return self.Present
     
-    def run(self):
-        self.clock.tick(1000)
+    def start(self):
+        self.bus.start()
+
+    def stop(self):
+        self.bus.stop()
+
+    def joystick1_callback(self, pgn, priority, source_address, data):
+        self.joystick_data["joystick_1"]["x"] = int.from_bytes(data[0:2], byteorder='little', signed=True)
+        self.joystick_data["joystick_1"]["y"] = int.from_bytes(data[2:4], byteorder='little', signed=True)
+        self.joystick_data["joystick_1"]["buttons"] = [bool(data[4] & (1 << i)) for i in range(8)]
+
+    def joystick2_callback(self, pgn, priority, source_address, data):
+        self.joystick_data["joystick_2"]["x"] = int.from_bytes(data[0:2], byteorder='little', signed=True)
+        self.joystick_data["joystick_2"]["y"] = int.from_bytes(data[2:4], byteorder='little', signed=True)
+        self.joystick_data["joystick_2"]["buttons"] = [bool(data[4] & (1 << i)) for i in range(8)]
+
+    def read_joysticks(self):
+        return self.joystick_data
 

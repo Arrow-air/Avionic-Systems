@@ -97,7 +97,7 @@ if __name__ == '__main__':
             data.JoystickPacket = joystickUSB.packetStruct()
             #data.JoystickPacket = joystickCAN.packetStruct()
             #data.IOPacket = io.packetStruct()
-            #data.ESCPacket = esc.packetStruct()
+            data.ESCPacket = esc.packetStruct()
             data.VerontePacket = veronte.packetStruct()
             data.BMSPacket = bms.packetStruct()
             data.now['TimeStamp'] = str(datetime.now())
