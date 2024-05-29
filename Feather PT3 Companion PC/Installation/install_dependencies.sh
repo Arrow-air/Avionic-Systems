@@ -56,5 +56,8 @@ pip install pygame==2.5.2
 sudo apt-get install python3-can
 sudo apt-get install python3-serial
 
+# Install J1939 CAN Library
+pip install can-j1939
+
 # Install Cyphal CAN Library
 pip install 'pycyphal[transport-can-pythoncan,transport-serial,transport-udp]'
