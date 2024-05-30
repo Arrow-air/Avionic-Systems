@@ -19,13 +19,20 @@ class ESC:
                                'MOT1_rpm_PCTe':0,'MOT2_rpm_PCTe':0,'MOT3_rpm_PCTe':0,'MOT4_rpm_PCTe':0,'MOT5_rpm_PCTe':0,'MOT6_rpm_PCTe':0,
                                'ESC1_Ve':0,'ESC2_Ve':0,'ESC3_Ve':0,'ESC4_Ve':0,'ESC5_Ve':0,'ESC6_Ve':0,
                                'ESC1_CUR_AMPe':0,'ESC2_CUR_AMPe':0,'ESC3_CUR_AMPe':0,'ESC4_CUR_AMPe':0,'ESC5_CUR_AMPe':0,'ESC6_CUR_AMPe':0}
+        self.escCount = 0
+        self.esc = []
 
-        self.esc1 = CyphalCAN(10)
-        self.esc2 = CyphalCAN(11)
-        self.esc3 = CyphalCAN(12)
-        self.esc4 = CyphalCAN(13)
-        self.esc5 = CyphalCAN(14)
-        self.esc6 = CyphalCAN(15)
+        for self.escCount in range(1,6):
+            try:
+                self.esc.append(CyphalCAN(9 + self.escCount))
+            except:
+                return self.escCount
+            
+            #self.esc2 = CyphalCAN(11)
+            #self.esc3 = CyphalCAN(12)
+            #self.esc4 = CyphalCAN(13)
+            #self.esc5 = CyphalCAN(14)
+            #self.esc6 = CyphalCAN(15)
 
         print("ESC Init")
 
@@ -75,10 +82,10 @@ class ESC:
 
         tasks = []
 
-        for x in range(1, 6):
+        for x in range(1, self.escCount):
 
-            esc = getattr(self, f'esc{x}')
-            tasks.append(self.esc_task(esc, node_id=9 + x))
+            #esc = getattr(self, f'esc{x}')
+            tasks.append(self.esc_task(self.esc[x], node_id= 9 + x))
         
         await asyncio.gather(*tasks)
 

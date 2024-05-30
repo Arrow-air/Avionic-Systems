@@ -277,7 +277,7 @@ parameters = {
     "MOT5_temp_C":0,
     "MOT6_temp_C":0,
 
-    "BAT1_soc_PCT":90, # the percentage of the battery left, warning range: 1-15
+    "BAT1_soc_PCT":100, # the percentage of the battery left, warning range: 1-15
     "BAT2_soc_PCT":100, # the percentage of the battery left, warning range: 1-15
     "BAT3_soc_PCT":100, # the percentage of the battery left, warning range: 1-15
     "BAT4_soc_PCT":100, # the percentage of the battery left, warning range: 1-15

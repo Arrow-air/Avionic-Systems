@@ -104,7 +104,7 @@ if __name__ == '__main__':
             data.packetStruct()
             
             #Wrtie Data log file
-            #data.logUpdate()
+            data.logUpdate()
             
             #Send Data to GCS Telemetry
             data.telemetryUpdate()

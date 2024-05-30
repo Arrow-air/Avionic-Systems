@@ -61,3 +61,6 @@ pip install can-j1939
 
 # Install Cyphal CAN Library
 pip install 'pycyphal[transport-can-pythoncan,transport-serial,transport-udp]'
+
+# Install Library for analysis of DBC files
+pip install cantools
